@@ -1,0 +1,52 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'com.final_project'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation group: 'org.springframework.security', name: 'spring-security-test'
+
+	// DB
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// 타임리프
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.1.RELEASE'
+
+	// Valid
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+	// Jwt
+	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'// 토튼발급받을때 추가하느거야
+
+	// Swagger
+	implementation "io.springfox:springfox-swagger-ui:3.0.0"
+	implementation 'nz.net.ultraq.jaxb:jaxb-utilities:2.1.0'
+	implementation "io.springfox:springfox-boot-starter:3.0.0"
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

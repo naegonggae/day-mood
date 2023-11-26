@@ -1,0 +1,91 @@
+name: CI/CD
+
+# event trigger
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      ## jdk setting
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      ## gradle caching
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      ## gradle build
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      ## jdk setting
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      ## test
+      - name: Test
+        run: ./gradlew test
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      ## jdk setting
+      - uses: actions/checkout@v3
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      ## gradle build
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+
+      ## docker build & push
+      - name: Docker build & push
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker build -f Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }} .
+          docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+
+      ## deploy to main 
+      - name: Deploy to main
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            sudo docker rm -f ${{ secrets.DOCKER_REPO }}
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            sudo docker run -d -p 8080:8080 --name ${{ secrets.DOCKER_REPO }} -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.EC2_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            sudo docker image prune -f

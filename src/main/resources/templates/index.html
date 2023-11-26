@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="fragments/common :: head('Spring Boot Tutorial!')">
+    <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+    <link href="starter-template.css" rel="stylesheet"/>
+
+    <title>Spring Boot Tutorial!</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('home')"></nav>
+
+    <main role="main" class="container">
+        <div class="starter-template">
+            <h2>안녕</h2>
+            <p class="lead">안녕하세요 홈 화면입니다.</p>
+        </div>
+    </main>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>
+
+<!--
+1. 부트스트랩 시작하기 2번 Bootstrap의 CSS와 JS를 포함시켜주세요.카피
+2. <html lang="en"> 상단 두번째줄에 lang 지우기
+3. 원하는 예시 들어가서 우클릭 - 페이지 소스보기 클릭
+4. 바디부분 카피
+5. 바디 위부분에 css파일 있으면 클릭 아래는 예시
+// Custom styles for this template
+<link href="starter-template.css" rel="stylesheet">
+6. 링크타고 들어가서 해당내용 복사
+7. 링크타고 들어간곳 마지막 엔드포인트를 파일명<아래에 꺽쇠안에있는거>으로 해서 resources-static에 css파일 생성
+https://getbootstrap.kr/docs/5.2/examples/navbar-fixed/<starter-template.css>
+8. option + command + L = 코드정렬
+9. 용어 커스텀 해서 사용
+-->
