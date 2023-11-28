@@ -1,9 +1,9 @@
 package com.final_project_leesanghun_team2.security.jwt;
 
+import com.final_project_leesanghun_team2.exception.user.NoSuchUserException;
 import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
 import com.final_project_leesanghun_team2.utils.JwtTokenUtil;
 import com.final_project_leesanghun_team2.domain.entity.User;
-import com.final_project_leesanghun_team2.exception.UserSnsException;
 import com.final_project_leesanghun_team2.repository.UserRepository;
 import java.io.IOException;
 import javax.servlet.FilterChain;
@@ -73,7 +73,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 		if (username != null) {
 			System.out.println("JwtAuthorizationFilter username 정상");
 			User userEntity = userRepository.findByUsername(username)
-					.orElseThrow(UserSnsException::new);
+					.orElseThrow(NoSuchUserException::new);
 			System.out.println("userEntity = " + userEntity);
 
 			// jwt 토큰 서명을 통해서 서명이 정상이면 authentication 객체가 만들어준다.

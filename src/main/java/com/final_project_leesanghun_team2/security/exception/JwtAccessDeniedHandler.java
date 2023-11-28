@@ -2,7 +2,7 @@ package com.final_project_leesanghun_team2.security.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.final_project_leesanghun_team2.domain.Response;
-import com.final_project_leesanghun_team2.exception.ErrorResponse;
+import com.final_project_leesanghun_team2.domain.ErrorResponse;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
