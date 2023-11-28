@@ -1,28 +1,31 @@
 package com.final_project_leesanghun_team2.service;
 
+import com.final_project_leesanghun_team2.domain.dto.comment.CommentSaveResponse;
+import com.final_project_leesanghun_team2.domain.dto.comment.ReplySaveResponse;
 import com.final_project_leesanghun_team2.domain.entity.Comment;
 import com.final_project_leesanghun_team2.domain.entity.Post;
 import com.final_project_leesanghun_team2.domain.entity.User;
-import com.final_project_leesanghun_team2.domain.request.CommentAddRequest;
-import com.final_project_leesanghun_team2.domain.request.CommentModifyRequest;
-import com.final_project_leesanghun_team2.domain.response.CommentDeleteResponse;
-import com.final_project_leesanghun_team2.domain.response.CommentModifyResponse;
-import com.final_project_leesanghun_team2.domain.response.CommentShowResponse;
-import com.final_project_leesanghun_team2.exception.ErrorCode;
-import com.final_project_leesanghun_team2.exception.UserSnsException;
+import com.final_project_leesanghun_team2.domain.dto.comment.CommentSaveRequest;
+import com.final_project_leesanghun_team2.domain.dto.comment.CommentUpdateRequest;
+import com.final_project_leesanghun_team2.domain.dto.comment.ReplySaveRequest;
+import com.final_project_leesanghun_team2.domain.dto.comment.CommentFindResponse;
+import com.final_project_leesanghun_team2.domain.dto.comment.ReplyFindResponse;
+import com.final_project_leesanghun_team2.exception.comment.NoSuchCommentException;
+import com.final_project_leesanghun_team2.exception.post.NoSuchPostException;
+import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
 import com.final_project_leesanghun_team2.repository.CommentRepository;
 import com.final_project_leesanghun_team2.repository.PostRepository;
 import com.final_project_leesanghun_team2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.Objects;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CommentService {
 
@@ -30,103 +33,116 @@ public class CommentService {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
-    /** 댓글 등록 **/
+    // 댓글 등록
     @Transactional
-    public CommentShowResponse add(Integer postsId, CommentAddRequest commentAddRequest,
-                                   Authentication authentication) {
+    public CommentSaveResponse save(Long id, CommentSaveRequest request, User user) {
 
         // 해당 postId의 포스트 유무 체크
-        Post post = postRepository.findById(postsId)
-                .orElseThrow(() -> new UserSnsException(ErrorCode.POST_NOT_FOUND));
+        Post findPost = postRepository.findById(id)
+                .orElseThrow(NoSuchPostException::new);
 
-        // UserName 정보 유무 체크
-        User user = userRepository.findByUserName(authentication.getName())
-                .orElseThrow(() -> new UserSnsException(ErrorCode.USERNAME_NOT_FOUND));
+        // 댓글 생성
+        Comment comment = Comment.createComment(request, findPost, user);
 
         // 해당 댓글 정보 DB에 저장
-        Comment savedComment = commentRepository.save(Comment.of(commentAddRequest.getComment(), user, post));
-
-        // Comment -> CommentShowResponse 형태로 포장
-        return CommentShowResponse.of(savedComment);
-    }
-
-    /** 댓글 조회 **/
-    public Page<CommentShowResponse> showAll(Integer id, Pageable pageable) {
-
-        // 해당 postId의 포스트 유무 체크
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new UserSnsException(ErrorCode.POST_NOT_FOUND));
-
-        // 해당 postId에 등록된 댓글을 전부 호출
-        Page<Comment> comments = commentRepository.findAllByPost(post, pageable);
-
-        return CommentShowResponse.toList(comments);
-    }
-
-    /** 댓글 수정 **/
-    public CommentModifyResponse modify(Integer postsId, Integer id, CommentModifyRequest commentModifyRequest,
-                                        Authentication authentication) {
-
-        // 해당 id의 댓글 유무 체크
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new UserSnsException(ErrorCode.COMMENT_NOT_FOUND));
-
-        // 해당 postId의 포스트 유무 체크
-        Post post = postRepository.findById(postsId)
-                .orElseThrow(() -> new UserSnsException(ErrorCode.POST_NOT_FOUND));
-
-        // UserName 정보 유무 체크
-        User user = userRepository.findByUserName(authentication.getName())
-                .orElseThrow(() -> new UserSnsException(ErrorCode.USERNAME_NOT_FOUND));
-
-        // 댓글에 저장된 id == 로그인 할때 id 체크
-        if (!Objects.equals(comment.getUser().getId(), user.getId())) {
-            throw new UserSnsException(ErrorCode.INVALID_PERMISSION);
-        }
-
-        // 댓글에 저장된 포스트 id == 해당 포스트 id 체크
-        if (!Objects.equals(comment.getPost().getId(), post.getId())) {
-            throw new UserSnsException(ErrorCode.INVALID_PERMISSION);
-        }
-
-        // 새로운 댓글 정보 DB에 저장
-        comment.setComment(commentModifyRequest.getComment());
         Comment savedComment = commentRepository.save(comment);
 
-        // Comment -> CommentModifyResponse 형태로 포장
-        return CommentModifyResponse.ofModify(savedComment);
-        // return new CommentModifyResponse(savedComment);
+        return CommentSaveResponse.from(savedComment);
     }
 
-    /** 댓글 삭제 **/
+    // 대댓글 등록
     @Transactional
-    public CommentDeleteResponse delete(Integer postId, Integer id, Authentication authentication) {
-
-        // 해당 id의 댓글 유무 체크
-        Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new UserSnsException(ErrorCode.COMMENT_NOT_FOUND));
+    public ReplySaveResponse saveReply(Long parentId, Long postId, ReplySaveRequest request, User user) {
 
         // 해당 postId의 포스트 유무 체크
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new UserSnsException(ErrorCode.POST_NOT_FOUND));
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(NoSuchPostException::new);
 
-        // UserName 정보 유무 체크
-        User user = userRepository.findByUserName(authentication.getName())
-                .orElseThrow(() -> new UserSnsException(ErrorCode.USERNAME_NOT_FOUND));
+        Comment findComment = commentRepository.findById(parentId)
+                .orElseThrow(NoSuchCommentException::new);
 
+        // 댓글 생성
+        Comment reply = Comment.createReply(request, findPost, findComment, user);
+
+        // 해당 댓글 정보 DB에 저장
+        Comment savedReply = commentRepository.save(reply);
+
+        return ReplySaveResponse.from(savedReply);
+    }
+
+    // 댓글 전체 조회
+    public Page<CommentFindResponse> findAll(Long id, Pageable pageable) {
+
+        // 해당 postId의 포스트 유무 체크
+        Post findPost = postRepository.findById(id)
+                .orElseThrow(NoSuchPostException::new);
+
+        return commentRepository.findAllByPost(findPost, pageable).map(CommentFindResponse::from);
+    }
+
+    // 대댓글 전체 조회
+    public Page<ReplyFindResponse> findAllReply(Long parentId, Long postId, Pageable pageable) {
+
+        // 해당 postId의 포스트 유무 체크
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(NoSuchPostException::new);
+
+        Comment findComment = commentRepository.findById(parentId)
+                .orElseThrow(NoSuchCommentException::new);
+
+        return commentRepository.findAllByPostAndParent(findPost, findComment, pageable).map(ReplyFindResponse::from);
+    }
+
+    // 댓글 수정
+    @Transactional
+    public void update(Long postId, Long cmtId, CommentUpdateRequest request, User user) {
+
+        // 해당 postId의 포스트 유무 체크
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(NoSuchPostException::new);
+
+        // 해당 id의 댓글 유무 체크
+        Comment findComment = commentRepository.findById(cmtId)
+                .orElseThrow(NoSuchCommentException::new);
+
+        // 이거 검증도 참 중요해 뭔가 일어날거같지는 않지만
         // 댓글에 저장된 id == 로그인 할때 id 체크
-        if (!Objects.equals(comment.getUser().getId(), user.getId())) {
-            throw new UserSnsException(ErrorCode.INVALID_PERMISSION);
+        if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
+            throw new PermissionDeniedException();
         }
 
         // 댓글에 저장된 포스트 id == 해당 포스트 id 체크
-        if (!Objects.equals(comment.getPost().getId(), post.getId())) {
-            throw new UserSnsException(ErrorCode.INVALID_PERMISSION);
+        if (!Objects.equals(findComment.getPost().getId(), findPost.getUser().getId())) {
+            throw new PermissionDeniedException();
         }
-        // 해당 댓글 삭제
-        commentRepository.delete(comment);
 
-        // Comment -> CommentDeleteResponse 로 포장
-        return CommentDeleteResponse.of(comment);
+        findComment.update(request);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public void delete(Long postId, Long cmtId, User user) {
+
+        // 해당 postId의 포스트 유무 체크
+        Post findPost = postRepository.findById(postId)
+                .orElseThrow(NoSuchPostException::new);
+
+        // 해당 id의 댓글 유무 체크
+        Comment findComment = commentRepository.findById(cmtId)
+                .orElseThrow(NoSuchCommentException::new);
+
+        // 이거 검증도 참 중요해 뭔가 일어날거같지는 않지만
+        // 댓글에 저장된 id == 로그인 할때 id 체크
+        if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
+            throw new PermissionDeniedException();
+        }
+
+        // 댓글에 저장된 포스트 id == 해당 포스트 id 체크
+        if (!Objects.equals(findComment.getPost().getId(), findPost.getUser().getId())) {
+            throw new PermissionDeniedException();
+        }
+
+        // 해당 댓글 삭제
+        commentRepository.delete(findComment);
     }
 }
