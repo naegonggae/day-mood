@@ -24,12 +24,13 @@ public class Likes extends BaseEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public static Likes of(User user, Post post) {
+    // 생성 메서드
+    public static Likes createLikes(User user, Post post) {
         return new Likes(user, post);
     }
-
     public Likes(User user, Post post) {
         this.user = user;
         this.post = post;
     }
+
 }
