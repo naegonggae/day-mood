@@ -21,11 +21,11 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 	testImplementation group: 'org.springframework.security', name: 'spring-security-test'
 
 	// DB
@@ -39,12 +39,19 @@ dependencies {
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
 	// Jwt
-	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'// 토튼발급받을때 추가하느거야
+	implementation group: 'com.auth0', name: 'java-jwt', version: '4.4.0'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// Swagger
 	implementation "io.springfox:springfox-swagger-ui:3.0.0"
 	implementation 'nz.net.ultraq.jaxb:jaxb-utilities:2.1.0'
 	implementation "io.springfox:springfox-boot-starter:3.0.0"
+
+	// Logback
+	implementation 'org.slf4j:slf4j-api:1.7.32' // SLF4J API
+	implementation 'ch.qos.logback:logback-classic:1.2.6' // Logback Classic 모듈
 }
 
 tasks.named('test') {

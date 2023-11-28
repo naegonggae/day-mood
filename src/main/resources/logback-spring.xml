@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <!-- 저장위치 -->
+  <property name="LOG_PATH" value="./logs"/>
+  <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+
+  <!-- Appenders -->
+  <!-- 콘솔 -->
+  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>DEBUG</level>
+    </filter>
+    <encoder>
+      <pattern>[%d{yyyyMMdd HH:mm:ss.SSS}] %clr(%-5level){} [%thread] %clr([%logger{0}:%line]){cyan} : %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- 파일로 로그 저장-->
+  <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <file>${LOG_PATH}/info.log</file>
+    <append>true</append>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_PATH}/info_${type}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>[%d{yyyyMMdd HH:mm:ss.SSS}] %clr(%-5level){} [%thread] %clr([%logger{0}:%line]){cyan} : %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- TRACE > DEBUG > INFO > WARN > ERROR > OFF -->
+  <!-- Root Logger -->
+  <root level="INFO">
+    <appender-ref ref="console"/>
+<!--    <appender-ref ref="INFO_LOG"/>-->
+  </root>
+</configuration>

@@ -1,6 +1,10 @@
 server:
   port: 8080
 spring:
+  # swagger
+  mvc:
+    path_match:
+      matching-strategy: ant_path_matcher
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: localhost
@@ -14,9 +18,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
   #        use_sql_comments: true # show jpql in console
-jwt:
-  token:
-    secret: secret
 logging:
   level:
     org.hibernate.SQL: debug
