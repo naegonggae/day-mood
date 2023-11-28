@@ -1,64 +1,116 @@
 package com.final_project_leesanghun_team2.service;
 
-import com.final_project_leesanghun_team2.domain.entity.User;
-import com.final_project_leesanghun_team2.domain.request.UserJoinRequest;
-import com.final_project_leesanghun_team2.domain.request.UserLoginRequest;
-import com.final_project_leesanghun_team2.domain.response.UserJoinResponse;
-import com.final_project_leesanghun_team2.domain.response.UserLoginResponse;
-import com.final_project_leesanghun_team2.exception.ErrorCode;
-import com.final_project_leesanghun_team2.exception.UserSnsException;
-import com.final_project_leesanghun_team2.repository.UserRepository;
+import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
 import com.final_project_leesanghun_team2.utils.JwtTokenUtil;
+import com.final_project_leesanghun_team2.domain.dto.user.TokenResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.UserFindResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.UserUpdateRequest;
+import com.final_project_leesanghun_team2.domain.entity.User;
+import com.final_project_leesanghun_team2.domain.dto.user.UserJoinRequest;
+import com.final_project_leesanghun_team2.domain.dto.user.UserLoginRequest;
+import com.final_project_leesanghun_team2.domain.dto.user.UserJoinResponse;
+import com.final_project_leesanghun_team2.exception.user.DuplicateUsernameException;
+import com.final_project_leesanghun_team2.exception.user.NoSuchUserException;
+import com.final_project_leesanghun_team2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Value("${jwt.token.secret}")
-    private String secretKey;
-    private Long expireTimeMS = 1000 * 60 * 60l; // 1시간
 
-    /** 회원가입 **/
-    public UserJoinResponse join(UserJoinRequest userJoinRequest){
-        // Q: 파라미터 구성을 직관적으로 보이게 짜는게 좋을까? 아니면 객체로 받는게 좋을까?
-        // A: 객체로 받고 추가할거 하면될듯.
+//    @Value("${jwt.token.secret}")
+//    private String secretKey;
+//    private Long expireTimeMS = 1000 * 60 * 60l; // 1시간
 
-        // userName 중복체크
-        userRepository.findByUserName(userJoinRequest.getUserName())
-                .ifPresent(user -> {
-                    throw new UserSnsException(ErrorCode.DUPLICATED_USER_NAME);
-                });
+    // 회원가입
+    @Transactional
+    public UserJoinResponse join(UserJoinRequest request){
 
-        // DB에 저장
-        String encodedPW = encoder.encode(userJoinRequest.getPassword());
-        User savedUser = userRepository.save(User.of(userJoinRequest.getUserName(), encodedPW));
+        boolean findUsername = userRepository.existsByUsername(request.getUsername());
+        if (findUsername) throw new DuplicateUsernameException();
 
-        return UserJoinResponse.of(savedUser);
+        String encodedPassword = encoder.encode(request.getPassword());
+
+        User user = User.createUser(request.getUsername(), encodedPassword);
+        User savedUser = userRepository.save(user);
+
+        return UserJoinResponse.from(savedUser);
     }
 
-    /** 로그인 **/
-    public UserLoginResponse login(UserLoginRequest userLoginRequest) {
+    // 로그인
+    public TokenResponse login(UserLoginRequest request) {
 
-        // userName 중복체크
-        User user = userRepository.findByUserName(userLoginRequest.getUserName())
-                .orElseThrow(() -> new UserSnsException(ErrorCode.USERNAME_NOT_FOUND)
-            );
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
 
-        // 로그인할때 받은 비밀번호, DB에 저장된 비밀번호 비교
-        if (!encoder.matches(userLoginRequest.getPassword(), user.getPassword())) {
-            throw new UserSnsException(ErrorCode.INVALID_PASSWORD);
-        }
+        System.out.println("memberService-login authenticationManagerBuilder 로 실제 인증을 시작합니다.");
+        // 실제 인증 - DaoAuthenticationProvider class 내 additionalAuthenticationChecks() 메소드로 비밀번호 체크
+        Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
 
-        // 로그인한 userName, secretKey, expireTimeMS로 토큰만들기
-        String token = JwtTokenUtil.createToken(user.getUserName(), secretKey, expireTimeMS);
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-        return new UserLoginResponse(token);
+        // 엑세스 토큰 생성
+        TokenResponse tokenResponse = jwtTokenUtil.createToken(principalDetails);
+
+        return tokenResponse;
     }
+
+    // 회원단건 조회
+    public UserFindResponse findOne(Long id) {
+
+        User findUser = userRepository.findById(id)
+                .orElseThrow(NoSuchUserException::new);
+
+        return UserFindResponse.from(findUser);
+    }
+
+
+    // username 으로 회원검색
+    public UserFindResponse findUsername(String username) {
+        User findUser = userRepository.findByUsername(username).orElseThrow(NoSuchUserException::new);
+        return UserFindResponse.from(findUser);
+    }
+
+    // 회원정보 수정
+    @Transactional
+    public void update(UserUpdateRequest request, User user) {
+
+//        User findUser = userRepository.findById(id)
+//                .orElseThrow(NoSuchUserException::new);
+
+        // 수정하려면 좀 더 확인해야하지 않을까?
+        // 로그인한 사람이 로그인한 유저의 정보만 수정 가능
+
+        user.update(request.getUsername());
+    }
+
+    // 회원 삭제
+    @Transactional
+    public void delete(User user) {
+
+//        User findUser = userRepository.findById(id)
+//                .orElseThrow(NoSuchUserException::new);
+
+        // 삭제하려면 좀 더 나 인지 확인해야하지 않을까?
+        // 로그인한 사람이 로그인한 유저의 정보만 삭제 가능
+
+        userRepository.deleteById(user.getId());
+    }
+
+    // 로그아웃
+
 }

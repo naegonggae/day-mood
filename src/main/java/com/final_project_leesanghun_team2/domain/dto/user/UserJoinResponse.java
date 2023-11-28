@@ -1,24 +1,22 @@
-package com.final_project_leesanghun_team2.domain.response;
+package com.final_project_leesanghun_team2.domain.dto.user;
 
 import com.final_project_leesanghun_team2.domain.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 public class UserJoinResponse {
-    private Integer userId;
-    private String userName;
 
-    // 회원가입할때 User -> UserJoinResponse 로 포장
-    public static UserJoinResponse of(User user) {
+    private Long id;
+    private String username;
+
+    public static UserJoinResponse from(User user) {
         return new UserJoinResponse(
                 user.getId(),
-                user.getUserName()
+                user.getUsername()
         );
     }
 }
