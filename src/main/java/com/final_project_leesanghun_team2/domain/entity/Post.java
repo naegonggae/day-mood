@@ -1,6 +1,8 @@
 package com.final_project_leesanghun_team2.domain.entity;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.final_project_leesanghun_team2.domain.dto.post.PostSaveRequest;
+import com.final_project_leesanghun_team2.domain.dto.post.PostUpdateRequest;
 import java.util.ArrayList;
 import lombok.*;
 
@@ -25,37 +27,49 @@ public class Post extends BaseEntity {
 
     private Boolean visibility = true;
 
+    private Long likeCount;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> commentList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE) // cascade 여부 고려
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Likes> likesList = new ArrayList<>();
 
-    // 포스트 등록할때 필요정보 DB에 저장
-    public static Post of(String title, String body,  User user) {
-        return new Post(
-                title,
-                body,
-                user
-        );
-    }
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TagPost> tagPostList = new ArrayList<>();
 
-    public Post(String title, String body, User user, LocalDate birthday) {
-        this.title = title;
-        this.body = body;
+    // 생성 메서드
+    public static Post createPost(PostSaveRequest request, User user) {
+        return new Post(request, user);
+    }
+    public Post(PostSaveRequest request, User user) {
+        this.content = request.getContent();
+        this.visibility = request.isVisibility();
         this.user = user;
-        this.birthday = birthday;
+        this.likeCount = 0L;
     }
 
-    // 위에꺼 쓰려고 만듬
-    public Post(String title, String body, User user) {
-        this.title = title;
-        this.body = body;
-        this.user = user;
+    // 수정
+    public void update(PostUpdateRequest request) {
+        this.content = request.getContent();
+        this.visibility = request.isVisibility();
     }
 
+    // 좋아요 증가 메서드
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    // 좋아요 감소 메서드
+    public void decreaseLikeCount() {
+        if (likeCount - 1 < 0) this.likeCount = 0L;
+        else this.likeCount--;
+    }
 }
