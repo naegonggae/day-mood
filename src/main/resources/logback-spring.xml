@@ -11,7 +11,8 @@
       <level>DEBUG</level>
     </filter>
     <encoder>
-      <pattern>[%d{yyyyMMdd HH:mm:ss.SSS}] %clr(%-5level){} [%thread] %clr([%logger{0}:%line]){cyan} : %msg%n</pattern>
+      <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}]  %clr(%-5level) %clr(${PID:-}){magenta} %clr(---){faint} %clr([%15.15thread]){faint} %clr(%-40.40logger{36}){cyan} %clr(:){faint} %msg%n</pattern>
+<!--      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul} | %clr(${LOG_LEVEL_PATTERN:-%5p}) | %thread |  %X{traceId} | %clr([%logger{0}:%line]){cyan} - %msg%n</pattern>-->
     </encoder>
   </appender>
 
