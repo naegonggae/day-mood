@@ -27,10 +27,6 @@ public class Tag {
 
 	private String name;
 
-	@JsonIgnore
-	@OneToMany(mappedBy = "tag", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<TagPost> tagPostList = new ArrayList<>();
-
 	// 생성 메서드
 	public static Tag createTag(TagSaveRequest request) {
 		return new Tag(request);

@@ -30,4 +30,12 @@ public class TagPost {
 	@JoinColumn(name = "tag_id")
 	private Tag tag;
 
+	// 생성메서드
+	public static TagPost createTagPost(Post post, Tag tag) {
+		return new TagPost(post, tag);
+	}
+	public TagPost(Post post, Tag tag) {
+		this.post = post;
+		this.tag = tag;
+	}
 }

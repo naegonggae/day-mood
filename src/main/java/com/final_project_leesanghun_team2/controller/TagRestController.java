@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,7 @@ public class TagRestController {
 	private final TagService tagService;
 
 	@PostMapping
-	public ResponseEntity<Response<TagSaveResponse>> save(TagSaveRequest request) {
+	public ResponseEntity<Response<TagSaveResponse>> save(@RequestBody TagSaveRequest request) {
 		TagSaveResponse result = tagService.save(request);
 		return ResponseEntity.ok().body(Response.success(result));
 	}

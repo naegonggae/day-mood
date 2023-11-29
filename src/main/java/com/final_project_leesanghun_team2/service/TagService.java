@@ -11,12 +11,14 @@ import com.final_project_leesanghun_team2.repository.TagPostRepository;
 import com.final_project_leesanghun_team2.repository.TagRepository;
 import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class TagService {
 
 	private final TagRepository tagRepository;
@@ -38,13 +40,29 @@ public class TagService {
 //			Tag savedTag = tagRepository.save(tag);
 //			return TagSaveResponse.from(savedTag);
 //		}
-		return tagRepository.findByName(request.getName())
-				.map(TagSaveResponse::from)
+		log.info("tag 저장 시작");
+		log.info(request.getName());
+		System.out.println("request = " + request.getName());
+		Tag findTag = tagRepository.findByName(request.getName())
 				.orElseGet(() -> {
+					log.info("조회했더니 없어서 생성하러 들어옴");
 					Tag tag = Tag.createTag(request);
-					Tag savedTag = tagRepository.save(tag);
-					return TagSaveResponse.from(savedTag);
+					return tagRepository.save(tag);
 				});
+//		Tag tag = Tag.createTag(request);
+//		Tag savedTag = tagRepository.save(tag);
+
+		log.info(findTag.getName());
+		log.info("tag 저장 종료");
+
+		return TagSaveResponse.from(findTag);
+//		return tagRepository.findByName(request.getName())
+//				.map(TagSaveResponse::from)
+//				.orElseGet(() -> {
+//					Tag tag = Tag.createTag(request);
+//					Tag savedTag = tagRepository.save(tag);
+//					return TagSaveResponse.from(savedTag);
+//				});
 	}
 
 	// tagPost 삭제
