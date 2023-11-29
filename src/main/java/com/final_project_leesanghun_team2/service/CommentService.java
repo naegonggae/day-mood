@@ -77,7 +77,7 @@ public class CommentService {
         Post findPost = postRepository.findById(id)
                 .orElseThrow(NoSuchPostException::new);
 
-        return commentRepository.findAllByPost(findPost, pageable).map(CommentFindResponse::from);
+        return commentRepository.findAllByPostAndParentNull(findPost, pageable).map(CommentFindResponse::from);
     }
 
     // 대댓글 전체 조회
@@ -105,14 +105,8 @@ public class CommentService {
         Comment findComment = commentRepository.findById(cmtId)
                 .orElseThrow(NoSuchCommentException::new);
 
-        // 이거 검증도 참 중요해 뭔가 일어날거같지는 않지만
         // 댓글에 저장된 id == 로그인 할때 id 체크
         if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
-            throw new PermissionDeniedException();
-        }
-
-        // 댓글에 저장된 포스트 id == 해당 포스트 id 체크
-        if (!Objects.equals(findComment.getPost().getId(), findPost.getUser().getId())) {
             throw new PermissionDeniedException();
         }
 
@@ -131,16 +125,12 @@ public class CommentService {
         Comment findComment = commentRepository.findById(cmtId)
                 .orElseThrow(NoSuchCommentException::new);
 
-        // 이거 검증도 참 중요해 뭔가 일어날거같지는 않지만
         // 댓글에 저장된 id == 로그인 할때 id 체크
         if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
             throw new PermissionDeniedException();
         }
 
-        // 댓글에 저장된 포스트 id == 해당 포스트 id 체크
-        if (!Objects.equals(findComment.getPost().getId(), findPost.getUser().getId())) {
-            throw new PermissionDeniedException();
-        }
+        // 대댓글을 먼저 삭제하고 댓글을 삭제하도록
 
         // 해당 댓글 삭제
         commentRepository.delete(findComment);
