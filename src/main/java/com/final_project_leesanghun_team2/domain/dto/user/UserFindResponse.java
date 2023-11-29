@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 public class UserFindResponse {
 
 	private Long id;
+	private String nickName;
 
 	public static UserFindResponse from(User user) {
-		return new UserFindResponse(user.getId());
+		return new UserFindResponse(user.getId(), user.getNickName());
 	}
 }
