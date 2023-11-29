@@ -47,14 +47,22 @@ public class User extends BaseEntity {
     }
 
     // 팔로우 감소 메서드
-    public void decreaseFollowNum() {
+    public void decreaseFollowingNum() {
         this.followingNum--;
+        // 상대방 followNum 을 컨트롤 해줘야해
+    }
+    public void decreaseFollowNum() {
+        this.followNum--;
         // 상대방 followNum 을 컨트롤 해줘야해
     }
 
     // 팔로우 증가 메서드
-    public void increaseFollowNum() {
+    public void increaseFollowingNum() {
         this.followingNum++;
+        // 상대방 followNum 을 컨트롤 해줘야해
+    }
+    public void increaseFollowNum() {
+        this.followNum++;
         // 상대방 followNum 을 컨트롤 해줘야해
     }
 }
