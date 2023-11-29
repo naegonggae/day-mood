@@ -27,7 +27,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 		log.error("Request Uri : {}", request.getRequestURI());
 		log.info("엑세스 권한이 없습니다.");
 
-		ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN, 403,
+		ErrorResponse errorResponse = new ErrorResponse(e.getClass().getSimpleName(),
 				"JwtAccessDeniedHandler 에 들어왔습니다.");
 		Response<ErrorResponse> error = Response.error(errorResponse);
 

@@ -5,12 +5,12 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class DuplicateUsernameException extends DreamTracksException {
+public class DuplicateNickNameException extends DreamTracksException {
 
-	private static final String MESSAGE = "사용중인 이메일입니다.";
+	private static final String MESSAGE = "사용중인 닉네임입니다.";
 	private static final HttpStatus STATUS = HttpStatus.BAD_REQUEST;
 
-	public DuplicateUsernameException() {
+	public DuplicateNickNameException() {
 		super(MESSAGE, STATUS);
 	}
 }
