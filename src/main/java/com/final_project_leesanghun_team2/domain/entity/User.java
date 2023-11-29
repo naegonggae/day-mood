@@ -1,8 +1,5 @@
 package com.final_project_leesanghun_team2.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,26 +13,21 @@ public class User extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
-    private String username;
+    @Column(nullable = false, unique = true, length = 50)
+    private String username; // 이메일
+    @Column(nullable = false, length = 50)
     private String password;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String nickName;
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    @Column(nullable = false)
     private Long followNum;
+    @Column(nullable = false)
     private Long followingNum;
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
-    private List<Post> postList = new ArrayList<>();
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "followUser", cascade = CascadeType.REMOVE)
-    private List<Follow> followList = new ArrayList<>(); // 내가 팔로우 하는 사람들
-
-    @JsonIgnore
-    @OneToMany(mappedBy = "followingUser", cascade = CascadeType.REMOVE)
-    private List<Follow> followingList = new ArrayList<>(); // 나를 팔로우잉하는 사람들
 
     // 생성 메서드
     public static User createUser(String username, String encodedPW) {
@@ -49,7 +41,7 @@ public class User extends BaseEntity {
         this.followingNum = 0L;
     }
 
-    // 수정
+    // 수정 메서드
     public void update(String username) {
         this.username = username;
     }
