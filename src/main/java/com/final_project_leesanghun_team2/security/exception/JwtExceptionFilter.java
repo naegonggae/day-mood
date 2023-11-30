@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 @Component
@@ -87,7 +88,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
 		// HTTP 응답 설정
 		res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-		res.setContentType("application/json");
+		res.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		res.setCharacterEncoding("UTF-8");
 
 		// JSON 응답 데이터를 HTTP 응답에 쓰기

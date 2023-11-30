@@ -29,36 +29,33 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint{
 	}
 
 	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e)
 			throws IOException, ServletException {
-		log.error("Not Authenticated Request", exception);
-		log.error("Request Uri : {}", request.getRequestURI());
-
-		System.out.println("JwtAuthenticationEntryPoint 시작");
+		log.error("commence 이 실행됨");
+		log.error("requestURI : {}", request.getRequestURI());
 
 		// 여기에서 원하는 에러 응답을 생성하고 응답 코드를 설정합니다.
-		String errorName = "AuthenticationException";
-		String errorMessage = "알 수 없는 인증오류입니다.";
+		String errorName = e.getClass().getSimpleName();
+		String errorMessage = e.getMessage();
 
-		System.out.println("errorName = " + exception.toString());
-		System.out.println("errorMessage = " + errorMessage);
+		log.info("ErrorResponse: "+e.getClass().getSimpleName()+" - "+e.getMessage());
 
-		if (exception.getClass().equals(InsufficientAuthenticationException.class)) {
-			errorName = "InsufficientAuthenticationException";
-			errorMessage = "인증이 필요한 작업입니다.";
-		}
-		else if (exception.getClass().equals(JWTDecodeException.class)) {
-			errorName = "JWTDecodeException";
-			errorMessage = "토큰 구성이 올바르지 않습니다.";
-		}
-		else if (exception.getClass().equals(TokenExpiredException.class)) {
-			errorName = "TokenExpiredException";
-			errorMessage = "토큰 기간이 만료되었습니다. 다시 로그인해주세요!";
-		}
-		else if (exception.getClass().equals(BadCredentialsException.class)) {
-			errorName = "BadCredentialsException";
-			errorMessage = "비밀번호가 틀렸습니다.";
-		}
+//		if (exception.getClass().equals(InsufficientAuthenticationException.class)) {
+//			errorName = "InsufficientAuthenticationException";
+//			errorMessage = "인증이 필요한 작업입니다.";
+//		}
+//		else if (exception.getClass().equals(JWTDecodeException.class)) {
+//			errorName = "JWTDecodeException";
+//			errorMessage = "토큰 구성이 올바르지 않습니다.";
+//		}
+//		else if (exception.getClass().equals(TokenExpiredException.class)) {
+//			errorName = "TokenExpiredException";
+//			errorMessage = "토큰 기간이 만료되었습니다. 다시 로그인해주세요!";
+//		}
+//		else if (exception.getClass().equals(BadCredentialsException.class)) {
+//			errorName = "BadCredentialsException";
+//			errorMessage = "비밀번호가 틀렸습니다.";
+//		}
 
 		// JSON 형식의 오류 응답을 생성합니다.
 		Map<String, String> errorResponse = new HashMap<>();
@@ -66,7 +63,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint{
 		errorResponse.put("message", errorMessage);
 
 		// HTTP 응답 설정
-		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding("UTF-8");
 

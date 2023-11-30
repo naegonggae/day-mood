@@ -5,32 +5,26 @@ import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
 import com.final_project_leesanghun_team2.utils.JwtTokenUtil;
 import com.final_project_leesanghun_team2.domain.entity.User;
 import com.final_project_leesanghun_team2.repository.UserRepository;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
-// 권한이나 인증이 필요한 특정 주소를 요청했을때 BasicAuthenticationFilter 가 무조건 타게 되어있음
 @Slf4j
-public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+@Component
+@RequiredArgsConstructor
+public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 	private final UserRepository userRepository;
 	private final JwtTokenUtil jwtTokenUtil;
-
-	public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTokenUtil jwtTokenUtil) {
-		super(authenticationManager);
-		this.userRepository = userRepository;
-		this.jwtTokenUtil = jwtTokenUtil;
-	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -55,10 +49,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
 		//header 가 있는지 확인
 		if (jwtHeader == null || !jwtHeader.startsWith(jwtTokenUtil.TOKEN_PREFIX)) {
-			logger.info("헤더가 없거나 형식이 잘못되어 MalformedJwtException 발생");
+//			logger.info("헤더가 없거나 형식이 잘못되어 MalformedJwtException 발생");
+//			throw new MalformedJwtException("헤더에 JWT 토큰이 존재하지 않거나 형식이 올바르지 않습니다.");
 
-			throw new MalformedJwtException("헤더에 JWT 토큰이 존재하지 않거나 형식이 올바르지 않습니다.");
+			logger.info("헤더에 토큰이 없거나 형식이 잘못되었습니다. Get 요청은 허용, 그 외의 요청은 인증이 필요하기 때문에 JwtAuthenticationEntryPoint 에서 예외처리 됩니다.");
+			chain.doFilter(request, response);
+			return;
 		}
+		logger.info("Post, Put, Delete 요청이 수행됩니다.");
 
 		//JWT 토큰을 검증해서 정상적인 사용자인지 확인
 
