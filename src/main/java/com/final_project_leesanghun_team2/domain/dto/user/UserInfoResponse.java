@@ -8,12 +8,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserUpdateResponse {
+public class UserInfoResponse {
 
 	private Long id;
+	private String nickName;
 
-	public static UserUpdateResponse from(User user) {
-		return new UserUpdateResponse(user.getId());
+	public static UserInfoResponse from(User user) {
+		return new UserInfoResponse(user.getId(), user.getNickName());
 	}
 
 }

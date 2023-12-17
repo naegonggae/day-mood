@@ -10,9 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class TokenResponse {
 
+	private Long id;
 	private String accessToken;
 
-	public static TokenResponse form(String accessToken) {
-		return new TokenResponse(accessToken);
+	public static TokenResponse form(Long id, String accessToken) {
+		return new TokenResponse(id, accessToken);
 	}
 }

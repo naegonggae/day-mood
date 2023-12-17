@@ -5,10 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
-public class UsernameCondition {
+@AllArgsConstructor
+public class UserLoginResponse {
 
-	private String nickName;
+	private Long id;
 
+	public static UserLoginResponse from(Long id) {
+		return new UserLoginResponse(id);
+	}
 }
