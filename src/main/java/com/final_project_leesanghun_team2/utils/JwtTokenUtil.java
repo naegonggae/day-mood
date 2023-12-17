@@ -31,6 +31,7 @@ public class JwtTokenUtil {
 
 	public TokenResponse createToken(PrincipalDetails principalDetails) {
 
+		Long userId = principalDetails.getUser().getId();
 		//access token 생성
 		String jwtToken = JWT.create()
 				.withSubject(principalDetails.getUsername())
@@ -40,7 +41,7 @@ public class JwtTokenUtil {
 				.withClaim("role", principalDetails.getUser().getRole().toString())
 				.sign(Algorithm.HMAC512(SECRET)); // SECRET = 사이트만 알고있는 고유값
 
-		return TokenResponse.form(jwtToken);
+		return TokenResponse.form(userId, jwtToken);
 	}
 
 	public String validateToken(String jwtToken) throws AuthenticationException{
