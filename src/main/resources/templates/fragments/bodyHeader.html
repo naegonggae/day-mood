@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<header id="header" th:fragment="bodyHeader">
+  <div class="container">
+    <div class="row">
+      <div class="header">
+        <div class="header-left">
+          <a onclick="goLoginHome()">하루기분</a>
+        </div>
+        <!-- // header-left -->
+        <div class="header-right">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                  data-bs-target="#loginModal">로그인
+          </button>
+          <div class="search-form">
+            <input id="searchInput" name="keyword" placeholder="태그를 입력하세요">
+            <button class="btn btn-dark" onclick="searchPost()">검색</button>
+          </div>
+          <a class="header-add-post" href="/posts/new">게시물 작성</a>
+          <div class="dropdown">
+            <a id="dropdownMenuLink" class="dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              더보기
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <li><a data-bs-toggle="modal" data-bs-target="#feedBackModal">FeedBack</a></li>
+              <li><a onclick="goToMyInfo()">내 정보</a></li>
+              <li><a onclick="openMyInfoModal()">설정</a></li>
+              <li><a href="#">로그아웃</a></li>
+            </ul>
+          </div>
+          <!-- // dropdown -->
+        </div>
+        <!-- // header-right -->
+      </div>
+      <!-- // header -->
+    </div>
+  </div>
+</header>
+<!-- // header -->

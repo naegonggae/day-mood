@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div id="modal" th:fragment="modal">
+
+  <!-- 로그인 모달 -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="loginModalLabel">하루기분</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- // modal-header -->
+        <div class="modal-body">
+          <p class="welcome-text">안녕하세요. <span>하루기분</span>입니다!</p>
+          <form class="modal-body-width">
+            <div class="mb-3">
+              <input type="text" class="form-control modal-input" id="loginUsername" placeholder="이메일을 입력하세요.">
+            </div>
+            <div class="mb-3">
+              <input type="password" class="form-control modal-input" id="loginPassword" placeholder="비밀번호를 입력하세요.">
+            </div>
+            <div class="modal-button-set">
+              <button type="button" class="btn btn-primary" onclick="login()">로그인</button>
+              <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                      data-bs-target="#signupModal">
+                회원가입
+              </button>
+            </div>
+            <!-- // modal-button-set -->
+          </form>
+        </div>
+        <!-- // modal-body -->
+      </div>
+    </div>
+  </div>
+  <!-- // 로그인 모달 -->
+
+  <!-- 회원가입 모달 -->
+  <div class="modal" id="signupModal" tabindex="-1" aria-labelledby="joinModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="joinModalLabel">하루기분</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- // modal-header -->
+        <div class="modal-body">
+          <p class="welcome-text"><span>회원가입</span></p>
+          <form class="modal-body-width">
+            <div class="mb-3">
+              <input type="email" class="form-control modal-input" id="username" placeholder="이메일" required>
+            </div>
+            <div class="mb-3">
+              <input type="password" class="form-control modal-input" id="password" placeholder="비밀번호" required>
+            </div>
+            <div class="mb-3">
+              <input type="password" class="form-control modal-input" id="confirmPassword" placeholder="비밀번호 확인" required>
+            </div>
+            <div class="mb-3">
+              <input type="text" class="form-control modal-input" id="nickName" placeholder="닉네임" required>
+            </div>
+            <div class="modal-button-set">
+              <button type="button" class="btn btn-primary" onclick="join()">회원가입</button>
+            </div>
+            <!-- // modal-button-set -->
+          </form>
+          <!-- // modal-body-width -->
+        </div>
+        <!-- // modal-body -->
+      </div>
+    </div>
+  </div>
+  <!-- // 회원가입 모달 -->
+
+  <!-- feedback 모달 -->
+  <div class="modal fade" id="feedBackModal" tabindex="-1" aria-labelledby="feedBackModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="feedBackModalLabel">하루기분</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- // modal-header -->
+        <div class="modal-body">
+          <p class="welcome-text">더 좋은 서비스를 위해, <span>평가</span>를 남겨주세요!</p>
+          <form class="modal-body-width xl-modal-input">
+            <div class="mb-3">
+              <input type="text" class="form-control modal-input" id="feedBackTitle" placeholder="제목">
+            </div>
+            <div class="mb-3">
+              <textarea type="text" class="form-control modal-input" id="feedBackContent" placeholder="내용"></textarea>
+            </div>
+            <div class="modal-button-set-xl">
+              <button type="button" class= "btn btn-primary" onclick="feedBackSubmit()">제출하기</button>
+            </div>
+            <!-- // modal-button-set -->
+          </form>
+          <!-- // modal-body-width -->
+        </div>
+        <!-- // modal-body -->
+      </div>
+    </div>
+  </div>
+  <!-- // feedback 모달 -->
+
+  <!-- 팔로우 모달 -->
+  <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="followingModalLabel">하루기분</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- // modal-header -->
+        <div class="modal-body" id="followingModalBody">
+          <!-- 여기에 팔로잉 목록이 들어갑니다 -->
+        </div>
+        <!-- // modal-body -->
+      </div>
+    </div>
+  </div>
+  <!-- // 팔로우 모달 -->
+
+  <!-- 팔로잉 모달 -->
+  <div class="modal fade" id="followModal" tabindex="-1" aria-labelledby="followModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="followModalLabel">하루기분</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- // modal-header -->
+        <div class="modal-body" id="followModalBody">
+          <!-- 여기에 팔로우 목록이 들어갑니다 -->
+        </div>
+        <!-- // modal-body -->
+      </div>
+    </div>
+  </div>
+  <!-- // 팔로잉 모달 -->
+
+  <!-- 설정 모달 -->
+  <div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="myModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="myModalLabel">하루기분</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <!-- // modal-header -->
+        <div class="modal-body">
+          <p class="welcome-text"><span id="userNameSpan">하루기분</span>님, 환영해요!</p>
+          <form class="modal-body-width">
+            <div class="mb-3">
+              <input type="text" class="form-control modal-input" id="updateNickname" placeholder="변경할 닉네임을 입력하세요.">
+            </div>
+            <div class="modal-button-set">
+              <button type="button" class="btn btn-primary" onclick="updateMyInfo()">변경</button>
+              <button type="button" class="btn btn-danger" onclick="deleteMyInfo()">회원탈퇴</button>
+            </div>
+            <!-- // modal-button-set -->
+          </form>
+        </div>
+        <!-- // modal-body -->
+      </div>
+    </div>
+  </div>
+  <!-- // 설정 모달 -->
+
+</div>
