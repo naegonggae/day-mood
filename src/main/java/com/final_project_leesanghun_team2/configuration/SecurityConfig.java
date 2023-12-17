@@ -30,7 +30,7 @@ public class SecurityConfig {
                 // 기본로그인을 사용하지 않음
                 .httpBasic().disable()
 
-                // cord 필터 미적용
+                // cors 필터 미적용
                 // .cors().and()
 
                 .authorizeRequests()
