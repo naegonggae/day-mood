@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+  .banner .slider img {
+    border-radius: 20px;
+  }
+</style>
+<body>
+<head th:replace="fragments/bodyHeader :: bodyHeader" />
+
+<div id="wrap">
+<section id="banner">
+  <div class="container">
+    <article class="banner">
+      <!-- 이미지 슬라이드 -->
+      <div class="slider">
+        <div><img src="img/banner_1.png" alt="이미지1"></div>
+        <div><img src="img/banner_2.png" alt="이미지2"></div>
+        <div><img src="img/banner_3.png" alt="이미지3"></div>
+      </div>
+      <!-- //이미지 슬라이드 -->
+    </article>
+  </div>
+</section>
+<!-- // banner -->
+
+<section id="contents">
+  <div class="container">
+    <section id="content-left">
+      <article class="contents" id="postList" th:each="post : ${posts}">
+        <div class="cont-header">
+          <div class="cont-header-user">
+            <i th:onclick="|goToUserInfo(${post.userId})|" class="fa fa-user-circle" aria-hidden="true"></i>
+            <a th:onclick="|goToUserInfo(${post.userId})|" class="nickName" th:text="${post.userNickName}"></a>
+          </div>
+        </div>
+        <!-- cont-header -->
+        <div class="cont-post">
+          <div>
+            <p id="postId" th:text="${post.id}"></p>
+            <p th:text="${post.content}"></p>
+          </div>
+          <div class="cont-tag mt15" th:each="tag : ${post.tagList}">
+            <p>#<span th:text="${tag.name}"></span></p>
+          </div>
+          <div class="cont-icon">
+            <ul>
+              <li>
+                <a th:onclick="|pushLike(${post.id})|" style="cursor: pointer;">
+                  <i th:id="likeButton- + ${post.id}" aria-hidden="true"
+                   th:class="${post.push} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
+                  </i>️
+                </a>
+              </li>
+              <li>
+                <a th:id="comment- + ${post.id}" th:onclick="|toggleCommentForm(${post.id})|" style="cursor: pointer;">
+                  <i class="fa fa-comment-o" aria-hidden="true"></i>
+                </a>
+              </li>
+             <p><span th:class="likeCount- + ${post.id}" th:text="${post.likeCount}"></span>명이 좋아합니다.</p>
+            </ul>
+          </div>
+        </div>
+        <!-- cont-post -->
+
+        <div class="comment-set">
+          <div th:id="'commentFormContainer-' + ${post.id}" style="display: none;">
+            <form th:id="'commentForm-' + ${post.id}" class="d-flex">
+              <div class="form-group flex-grow-1">
+                <input class="form-control" th:id="'commentContent-' + ${post.id}" rows="5" placeholder="댓글을 입력하세요." required>
+              </div>
+              <button type="button" class="btn btn-primary" th:onclick="|comment(${post.id})|">
+                <i class="fa fa-angle-up" aria-hidden="true"></i>
+              </button>
+            </form>
+            <div th:id="'commentList-' + ${post.id}" class="comment-list">
+              <!-- 댓글 리스트 정보가 표시됩니다. -->
+            </div>
+          </div>
+        </div>
+        <!-- // comment-set -->
+      </article>
+      <!-- // postList -->
+    </section>
+    <!-- // content-left -->
+    <section id="content-right">
+      <div class="new-user-list">
+        <div class="new-user-intro">새로 조인한 유저 🐣</div>
+        <div class="new-user-box">
+          <div class="new-user-info" th:each="user : ${newUsers}">
+            <span th:text="${user.index}"></span>
+            <i th:onclick="|goToUserInfo(${user.id})|" class="fa fa-user-circle" aria-hidden="true"></i>
+            <a th:onclick="|goToUserInfo(${user.id})|" class="nickName" th:text="${user.nickName}"></a>
+          </div>
+        </div>
+        <!-- cont-header -->
+      </div>
+      <!-- // new-user-list -->
+
+      <div class="new-user-list">
+        <div class="new-user-intro">좋아요 랭킹 💛</div>
+        <div class="new-user-box">
+          <div class="new-user-info" th:each="user : ${likeUsers}">
+            <span th:text="${user.index}"></span>
+            <i th:onclick="|goToUserInfo(${user.id})|" class="fa fa-user-circle" aria-hidden="true"></i>
+            <a th:onclick="|goToUserInfo(${user.id})|" class="nickName" th:text="${user.nickName}"></a>
+          </div>
+        </div>
+        <!-- cont-header -->
+      </div>
+      <!-- // new-user-list -->
+
+      <div class="new-user-list">
+        <div class="new-user-intro">팔로우 랭킹 🏅</div>
+        <div class="new-user-box">
+          <div class="new-user-info" th:each="user : ${followerUsers}">
+            <span th:text="${user.index}"></span>
+            <i th:onclick="|goToUserInfo(${user.id})|" class="fa fa-user-circle" aria-hidden="true"></i>
+            <a th:onclick="|goToUserInfo(${user.id})|" class="nickName" th:text="${user.nickName}"></a>
+          </div>
+        </div>
+        <!-- cont-header -->
+      </div>
+      <!-- // new-user-list -->
+    </section>
+    <!-- content-right-->
+    <section id="content-center">
+      <nav>
+        <ul class="pagination justify-content-center">
+          <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/{id}(page=0, id=${userId})}">이전</a>
+          </li>
+          <li class="page-item" th:classappend="${i == currentPage} ? 'active'" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a class="page-link" href="#" th:href="@{/{id}(page=${i}, id=${userId})}" th:text="${i + 1}"></a>
+          </li>
+          <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+            <a class="page-link" href="#" th:href="@{/{id}(page=${currentPage + 1}, id=${userId})}">다음</a>
+          </li>
+        </ul>
+      </nav>
+      <!-- // pagination -->
+    </section>
+    <!-- // content-center -->
+  </div>
+  <!-- // container-->
+</section>
+</div>
+<div th:replace="fragments/modal :: modal" />
+<div th:replace="fragments/footer :: footer" />
+
+<script>
+  //이미지 슬라이더
+  $(".slider").slick({
+    dots: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: true,
+          dots: false
+        }
+      }
+    ]
+  });
+
+</script>
+</body>
+</html>

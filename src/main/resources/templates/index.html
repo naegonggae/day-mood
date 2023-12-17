@@ -1,56 +1,252 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head th:replace="fragments/common :: head('Spring Boot Tutorial!')">
-    <!-- @{...}는 타임리프의 기본 링크 표현 구문 -->
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
-    <link href="starter-template.css" rel="stylesheet"/>
-
-    <title>Spring Boot Tutorial!</title>
-</head>
-
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+  .banner .slider img {
+    border-radius: 20px;
+  }
+</style>
 <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:replace="fragments/common :: menu('home')"></nav>
 
-    <main role="main" class="container">
-        <div class="starter-template">
-            <h2>안녕</h2>
-            <p class="lead">안녕하세요 홈 화면입니다.</p>
+<header id="header">
+  <div class="container">
+    <div class="row">
+      <div class="header">
+        <div class="header-left">
+          <a href="/">하루기분</a>
         </div>
-    </main>
+        <!-- // header-left -->
+        <div class="header-right">
+          <div class="search-form">
+            <input id="searchInput" name="keyword" placeholder="태그를 입력하세요">
+            <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#loginModal">검색</button>
+          </div>
+          <a class="header-add-post" data-bs-toggle="modal" data-bs-target="#loginModal">게시물 작성</a>
+          <a data-bs-toggle="modal" data-bs-target="#loginModal">로그인</a>
+        </div>
+        <!-- // header-right -->
+      </div>
+      <!-- // header -->
+    </div>
+  </div>
+</header>
+<!-- // header -->
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-            crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-            crossorigin="anonymous"></script>
+<div id="wrap">
+  <section id="banner">
+    <div class="container">
+      <article class="banner">
+        <!-- 이미지 슬라이드 -->
+        <div class="slider">
+          <div><img src="img/banner_1.png" alt="이미지1"></div>
+          <div><img src="img/banner_2.png" alt="이미지2"></div>
+          <div><img src="img/banner_3.png" alt="이미지3"></div>
+        </div>
+        <!-- //이미지 슬라이드 -->
+      </article>
+    </div>
+  </section>
+  <!-- // banner -->
+
+  <section id="contents">
+    <div class="container">
+      <section id="content-left">
+        <article class="contents" id="postList" th:each="post : ${posts}">
+          <div class="cont-header">
+            <div class="cont-header-user">
+              <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
+              <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName" th:text="${post.userNickName}"></a>
+            </div>
+          </div>
+          <!-- cont-header -->
+          <div class="cont-post">
+            <div>
+              <p id="postId" th:text="${post.id}"></p>
+              <p th:text="${post.content}"></p>
+            </div>
+            <div class="cont-tag mt15" th:each="tag : ${post.tagList}">
+              <p>#<span th:text="${tag.name}"></span></p>
+            </div>
+            <div class="cont-icon">
+              <ul>
+                <li>
+                  <a data-bs-toggle="modal" data-bs-target="#loginModal" style="cursor: pointer;">
+                    <i th:id="likeButton- + ${post.id}" aria-hidden="true" class="fa fa-heart-o"></i>️
+                  </a>
+                </li>
+                <li>
+                  <a th:id="comment- + ${post.id}" th:onclick="|toggleCommentForm(${post.id})|" style="cursor: pointer;">
+                    <i class="fa fa-comment-o" aria-hidden="true"></i>
+                  </a>
+                </li>
+                <p><span th:class="likeCount- + ${post.id}" th:text="${post.likeCount}"></span>명이 좋아합니다.</p>
+              </ul>
+            </div>
+          </div>
+          <!-- cont-post -->
+
+          <div class="comment-set">
+            <div th:id="'commentFormContainer-' + ${post.id}" style="display: none;">
+              <form th:id="'commentForm-' + ${post.id}" class="d-flex">
+                <div class="form-group flex-grow-1">
+                  <input class="form-control" th:id="'commentContent-' + ${post.id}" rows="5" placeholder="댓글을 입력하세요." required>
+                </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                  <i class="fa fa-angle-up" aria-hidden="true"></i>
+                </button>
+              </form>
+              <div th:id="'commentList-' + ${post.id}" class="comment-list">
+                <!-- 댓글 리스트 정보가 표시됩니다. -->
+              </div>
+            </div>
+          </div>
+          <!-- // comment-set -->
+        </article>
+        <!-- // postList -->
+      </section>
+      <!-- // content-left -->
+      <section id="content-right">
+        <div class="new-user-list">
+          <div class="new-user-intro">새로 조인한 유저 🐣</div>
+          <div class="new-user-box">
+            <div class="new-user-info" th:each="user : ${newUsers}">
+              <span th:text="${user.index}"></span>
+              <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
+              <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName" th:text="${user.nickName}"></a>
+            </div>
+          </div>
+          <!-- cont-header -->
+        </div>
+        <!-- // new-user-list -->
+
+        <div class="new-user-list">
+          <div class="new-user-intro">좋아요 랭킹 💛</div>
+          <div class="new-user-box">
+            <div class="new-user-info" th:each="user : ${likeUsers}">
+              <span th:text="${user.index}"></span>
+              <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
+              <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName" th:text="${user.nickName}"></a>
+            </div>
+          </div>
+          <!-- cont-header -->
+        </div>
+        <!-- // new-user-list -->
+
+        <div class="new-user-list">
+          <div class="new-user-intro">팔로우 랭킹 🏅</div>
+          <div class="new-user-box">
+            <div class="new-user-info" th:each="user : ${followerUsers}">
+              <span th:text="${user.index}"></span>
+              <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
+              <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName" th:text="${user.nickName}"></a>
+            </div>
+          </div>
+          <!-- cont-header -->
+        </div>
+        <!-- // new-user-list -->
+      </section>
+      <!-- content-right-->
+      <section id="content-center">
+        <nav>
+          <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+              <a class="page-link" th:href="@{/(page=0)}">이전</a>
+            </li>
+            <li class="page-item" th:classappend="${i == currentPage} ? 'active'" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+              <a class="page-link" href="#" th:href="@{/(page=${i})}" th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+              <a class="page-link" href="#" th:href="@{/(page=${currentPage + 1})}">다음</a>
+            </li>
+          </ul>
+        </nav>
+        <!-- // pagination -->
+      </section>
+      <!-- // content-center -->
+    </div>
+    <!-- // container-->
+  </section>
+</div>
+<div th:replace="fragments/modal :: modal" />
+<div th:replace="fragments/footer :: footer" />
+
+<script>
+
+  //이미지 슬라이더
+  $(".slider").slick({
+    dots: false,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: true,
+          dots: false
+        }
+      }
+    ]
+  });
+
+  function createCommentElement(comment, postId) {
+    // 받아온 댓글 데이터를 이용하여 댓글 엘리먼트 생성
+    const commentElement = document.createElement('div');
+    // commentElement.className = `comment-${comment.id}`;
+    commentElement.innerHTML = `
+                    <!-- 여기에 댓글 리스트가 들어갑니다 -->
+                    <div class="comment-${comment.id}" data-comment-id="1">
+                      <div class="cont-cmt-header">
+                        <div class="cont-cmt-user">
+                          <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
+                          <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName">${comment.nickName}</a>
+                          <a class="cmt-time-ago"> ${comment.updatedAt}</a>
+                        </div>
+                      </div>
+                      <div class="cmt-info">
+                        <p class="cmt-id">${comment.id}</p>
+                        <p>${comment.content}</p>
+                      </div>
+                      <a class="reply-btn" id="comment-${comment.id}" onclick="toggleReplyForm(${postId}, ${comment.id})">답글 보기</a>
+                      <div class="reply-set" id="replyFormContainer-${comment.id}" style="display: none;">
+                        <form class="d-flex">
+                          <div class="form-group flex-grow-1">
+                            <input class="form-control" id="replyContent-${comment.id}" name="reply" rows="5" placeholder="답글을 입력하세요." required></input>
+                          </div>
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="fa fa-angle-up" aria-hidden="true"></i>
+                          </button>
+                        </form>
+                        <div id="replyList-${comment.id}" class="reply-list">
+                          <!-- 여기에 답글 리스트가 들어갑니다 -->
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 다른 댓글들도 동일한 구조로 나열됨 -->
+    `;
+    return commentElement;
+  }
+
+  function createReplyElement(reply) {
+    const replyElement = document.createElement('div');
+    replyElement.innerHTML = `
+                    <div class="reply-${reply.id}" data-reply-id="${reply.id}">
+                      <div class="cont-rp-header">
+                        <div class="cont-rp-user">
+                          <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
+                          <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName">${reply.nickName}</a>
+                          <a class="rp-time-ago"> ${reply.updatedAt}</a>
+                        </div>
+                      </div>
+                      <div class="rp-info">
+                        <p class="rp-id">${reply.id}</p>
+                        <p>${reply.content}</p>
+                      </div>
+                    <div>
+    `;
+    return replyElement;
+  }
+
+</script>
 </body>
-
 </html>
-
-<!--
-1. 부트스트랩 시작하기 2번 Bootstrap의 CSS와 JS를 포함시켜주세요.카피
-2. <html lang="en"> 상단 두번째줄에 lang 지우기
-3. 원하는 예시 들어가서 우클릭 - 페이지 소스보기 클릭
-4. 바디부분 카피
-5. 바디 위부분에 css파일 있으면 클릭 아래는 예시
-// Custom styles for this template
-<link href="starter-template.css" rel="stylesheet">
-6. 링크타고 들어가서 해당내용 복사
-7. 링크타고 들어간곳 마지막 엔드포인트를 파일명<아래에 꺽쇠안에있는거>으로 해서 resources-static에 css파일 생성
-https://getbootstrap.kr/docs/5.2/examples/navbar-fixed/<starter-template.css>
-8. option + command + L = 코드정렬
-9. 용어 커스텀 해서 사용
--->
