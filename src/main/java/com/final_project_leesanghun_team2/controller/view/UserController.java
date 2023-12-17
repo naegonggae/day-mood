@@ -1,7 +1,7 @@
 package com.final_project_leesanghun_team2.controller.view;
 
 import com.final_project_leesanghun_team2.domain.dto.follow.IsFollowResponse;
-import com.final_project_leesanghun_team2.domain.dto.likes.LikesMeResponse;
+import com.final_project_leesanghun_team2.domain.dto.likes.LikesCheckResponse;
 import com.final_project_leesanghun_team2.domain.dto.post.PostFindResponse;
 import com.final_project_leesanghun_team2.domain.dto.user.UserFindResponse;
 import com.final_project_leesanghun_team2.service.FollowService;
@@ -40,15 +40,11 @@ public class UserController {
 
 		UserFindResponse user = userService.findOne(userId);
 
-		// 내가 팔로우 했는지
+		// 내가 팔로우 했는지 체크
 		IsFollowResponse isFollow = followService.isFollow(userId, id);
-		user.setPush(isFollow.isPush());
+		user.addIsPush(isFollow.isPush());
 
-		Page<PostFindResponse> posts = postService.findUserPost(pageable, userId);
-		for (PostFindResponse post : posts) {
-			LikesMeResponse likesMeResponse = likesService.userPush(post.getId(), id);
-			post.setPush(likesMeResponse.isPush());
-		}
+		Page<PostFindResponse> posts = getPostFindResponsePage(userId, id, pageable);
 
 		model.addAttribute("user", user);
 		model.addAttribute("posts", posts);
@@ -65,15 +61,23 @@ public class UserController {
 
 		UserFindResponse user = userService.findOne(id);
 
-		Page<PostFindResponse> posts = postService.findUserPost(pageable, id);
-		for (PostFindResponse post : posts) {
-			LikesMeResponse likesMeResponse = likesService.userPush(post.getId(), id);
-			post.setPush(likesMeResponse.isPush());
-		}
+		Page<PostFindResponse> posts = getPostFindResponsePage(id, id, pageable);
 
 		model.addAttribute("user", user);
 		model.addAttribute("posts", posts);
 
 		return "users/myInfo";
+	}
+
+	private Page<PostFindResponse> getPostFindResponsePage(Long userId, Long id, Pageable pageable) {
+		Page<PostFindResponse> posts = postService.findUserPost(pageable, userId);
+
+		// post 마다 isPush 를 채워준다.
+		posts.stream()
+				.forEach(post -> {
+					LikesCheckResponse likesCheckResponse = likesService.hasUserLikedPost(post.getId(), id);
+					post.addIsPush(likesCheckResponse.isPush());
+				});
+		return posts;
 	}
 }
