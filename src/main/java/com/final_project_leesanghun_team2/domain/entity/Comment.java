@@ -1,8 +1,8 @@
 package com.final_project_leesanghun_team2.domain.entity;
 
-import com.final_project_leesanghun_team2.domain.dto.comment.CommentSaveRequest;
-import com.final_project_leesanghun_team2.domain.dto.comment.CommentUpdateRequest;
-import com.final_project_leesanghun_team2.domain.dto.comment.ReplySaveRequest;
+import com.final_project_leesanghun_team2.domain.dto.comment.request.CommentSaveRequest;
+import com.final_project_leesanghun_team2.domain.dto.comment.request.CommentUpdateRequest;
+import com.final_project_leesanghun_team2.domain.dto.comment.request.ReplySaveRequest;
 import lombok.*;
 
 import javax.persistence.*;
@@ -47,7 +47,7 @@ public class Comment extends BaseEntity {
         this.post = post;
     }
 
-    // 대댓글 작성
+    // 답글 생성
     public static Comment createReply(ReplySaveRequest request, Post findPost, Comment findComment, User user) {
         return new Comment(request, findPost, findComment, user);
     }
