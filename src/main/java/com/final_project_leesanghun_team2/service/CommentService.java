@@ -96,9 +96,7 @@ public class CommentService {
                 .orElseThrow(NoSuchCommentException::new);
 
         // Comment User == login User 일 때 수정
-        if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
-            throw new PermissionDeniedException();
-        }
+        checkPermission(user, findComment);
 
         findComment.update(request);
     }
@@ -116,10 +114,14 @@ public class CommentService {
                 .orElseThrow(NoSuchCommentException::new);
 
         // Comment User == login User 일 때 삭제
+        checkPermission(user, findComment);
+
+        commentRepository.delete(findComment);
+    }
+
+    private static void checkPermission(User user, Comment findComment) {
         if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
             throw new PermissionDeniedException();
         }
-
-        commentRepository.delete(findComment);
     }
 }

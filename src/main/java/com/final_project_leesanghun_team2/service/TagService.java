@@ -1,15 +1,11 @@
 package com.final_project_leesanghun_team2.service;
 
+import com.final_project_leesanghun_team2.domain.dto.tag.TagFindResponse;
 import com.final_project_leesanghun_team2.exception.tag.NoSuchTagException;
 import com.final_project_leesanghun_team2.domain.dto.tag.TagSaveRequest;
 import com.final_project_leesanghun_team2.domain.dto.tag.TagSaveResponse;
-import com.final_project_leesanghun_team2.domain.entity.Post;
 import com.final_project_leesanghun_team2.domain.entity.Tag;
-import com.final_project_leesanghun_team2.exception.post.NoSuchPostException;
-import com.final_project_leesanghun_team2.repository.PostRepository;
-import com.final_project_leesanghun_team2.repository.TagPostRepository;
 import com.final_project_leesanghun_team2.repository.TagRepository;
-import javax.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,61 +18,47 @@ import org.springframework.transaction.annotation.Transactional;
 public class TagService {
 
 	private final TagRepository tagRepository;
-	private final TagPostRepository tagPostRepository;
-	private final PostRepository postRepository;
 
 	// 태그 생성
 	@Transactional
-	public TagSaveResponse save(TagSaveRequest request) {
+	public TagSaveResponse saveTag(TagSaveRequest request) {
 
-//		boolean isExist = tagRepository.existsByName(request.getName());
-//		if (isExist) {
-//			Tag tag = tagRepository.findByName(request.getName())
-//					.orElseThrow(NoSuchTagException::new);
-//			return TagSaveResponse.from(tag);
-//		}
-//		else {
-//			Tag tag = Tag.createTag(request);
-//			Tag savedTag = tagRepository.save(tag);
-//			return TagSaveResponse.from(savedTag);
-//		}
 		log.info("tag 저장 시작");
 		log.info(request.getName());
-		System.out.println("request = " + request.getName());
+
+		// 태그를 조회해보고 있으면 사용, 없으면 태그 생성
 		Tag findTag = tagRepository.findByName(request.getName())
 				.orElseGet(() -> {
 					log.info("조회했더니 없어서 생성하러 들어옴");
 					Tag tag = Tag.createTag(request);
 					return tagRepository.save(tag);
 				});
-//		Tag tag = Tag.createTag(request);
-//		Tag savedTag = tagRepository.save(tag);
 
-		log.info(findTag.getName());
 		log.info("tag 저장 종료");
 
 		return TagSaveResponse.from(findTag);
-//		return tagRepository.findByName(request.getName())
-//				.map(TagSaveResponse::from)
-//				.orElseGet(() -> {
-//					Tag tag = Tag.createTag(request);
-//					Tag savedTag = tagRepository.save(tag);
-//					return TagSaveResponse.from(savedTag);
-//				});
 	}
 
-	// tagPost 삭제
-	@Transactional
-	public void delete(String tagName, Long postId) {
+	// tagName 이 저장되어 있는 태그인지 확인
+	public TagFindResponse isExistTag(String tagName) {
 
-		Tag tag = tagRepository.findByName(tagName)
+		boolean result = tagRepository.existsByName(tagName);
+
+		// 태그가 존재하지 않으므로 검색할 수 없음
+		if (!result) throw new NoSuchTagException();
+
+		// 태그가 존재하므로 true 를 반환.
+		return TagFindResponse.from(result);
+	}
+
+	// 태그 삭제
+	@Transactional
+	public void deleteTag(Long tagId) {
+
+		Tag findTag = tagRepository.findById(tagId)
 				.orElseThrow(NoSuchTagException::new);
 
-		Post post = postRepository.findById(postId)
-				.orElseThrow(NoSuchPostException::new);
-
-		// 연관관계 유지를 해줘야할 것 같음
-		tagPostRepository.deleteByTagAndPost(tag, post);
+		tagRepository.delete(findTag);
 	}
 
 }
