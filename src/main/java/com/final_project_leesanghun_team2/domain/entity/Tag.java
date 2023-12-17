@@ -1,16 +1,11 @@
 package com.final_project_leesanghun_team2.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.final_project_leesanghun_team2.domain.dto.tag.TagSaveRequest;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +20,7 @@ public class Tag {
 	@Column(name = "tag_id")
 	private Long id;
 
+	@Column(unique = true, nullable = false, length = 15)
 	private String name;
 
 	// 생성 메서드
