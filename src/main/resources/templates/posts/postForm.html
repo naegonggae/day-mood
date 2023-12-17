@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<body>
+<head th:replace="fragments/bodyHeader :: bodyHeader" />
+<div id="wrap">
+  <div class="container-post-form mt-5">
+    <h2 class="post-form-title">게시물 작성</h2>
+    <div class="tag-set">
+      <input id="tagInput" type="text" name="keyword" placeholder="태그를 입력하세요">
+      <button class="btn btn-dark" onclick="addTag()">추가</button>
+      <div id="tagContainer">
+        <!-- 여기에 동적으로 생성된 태그가 추가됩니다. -->
+      </div>
+    </div>
+    <!-- // tag-set -->
+
+    <form id="postForm" class="mt20">
+      <div class="form-group">
+        <textarea class="form-control" id="content" rows="5" placeholder="게시물 내용을 입력하세요." required></textarea>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="post()">작성</button>
+    </form>
+    <!-- // postForm -->
+  </div>
+  <!-- //container-post-form -->
+</div>
+<div th:replace="fragments/modal :: modal" />
+<div th:replace="fragments/footer :: footer" />
+
+<script>
+
+  // 게시물 등록
+  async function post() {
+    try {
+      const response = await fetch(baseUrl+'/api/v1/users/check', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        }
+      });
+      const result = await response.json();
+
+      if (result.resultCode === 'SUCCESS') {
+        const userId = result.result.id;
+
+        const content = document.getElementById('content').value;
+        const tagList = getTagList();
+
+        const data = {
+          content : content,
+          tagList : tagList
+        };
+
+        try {
+          const response = await fetch(baseUrl+'/api/v1/posts', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify(data),
+          });
+          const result = await response.json();
+
+          if (result.resultCode === 'SUCCESS') {
+            console.log('POST 등록 성공:', result);
+            window.location.href = `${baseUrl}/${userId}`;
+          } else {
+            console.log('Post 등록 실패. HTTP 상태 코드:', response.status);
+            console.log('Post 등록 실패. 응답값:', result);
+            if (result && result.result && result.result.message !== undefined) {
+              alert(result.result.message);
+            } else {
+              alert(result.message);
+            }
+          }
+        } catch (error) {
+          console.error('Error during POST request:', error);
+        }
+      } else {
+        console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
+        console.log('유저 확인 실패. 응답값:', result);
+        if (result && result.result && result.result.message !== undefined) {
+          alert(result.result.message);
+        } else {
+          alert(result.message);
+        }
+      }
+    } catch (error) {
+      console.error('유저 확인 에러 발생:', error);
+    }
+  }
+
+  // 태그 추가
+  async function addTag() {
+    const tagInput = document.getElementById('tagInput');
+    const tagContainer = document.getElementById('tagContainer');
+
+    const tag = tagInput.value.trim().toLowerCase();
+
+    if (tag !== '') {
+      const tagElements = tagContainer.children;
+      const existingTags = Array.from(tagElements).map(tagElement => {
+        const tagText = tagElement.querySelector('.tag-name').innerText;
+        return tagText;
+      });
+
+      if (!existingTags.includes(tag)) {
+        console.log(tag);
+        const tagElement = document.createElement('div');
+        tagElement.innerHTML = `
+                      <span class="tag-span"># <a class="tag-name">${tag}</a></span>
+        `;
+        tagContainer.appendChild(tagElement);
+
+        tagElement.addEventListener('click', function () {
+          tagContainer.removeChild(tagElement);
+        });
+      } else {
+        alert('태그가 중복되었습니다.');
+      }
+    }
+    await saveTag(tag);
+    tagInput.value = '';
+  }
+
+  // 태그 등록
+  async function saveTag(tagName) {
+    try {
+      const data = {
+        name : tagName
+      };
+
+      const response = await fetch(baseUrl+'/api/v1/tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+
+      if (result.resultCode === 'SUCCESS') {
+        console.log('Tag 등록 성공:', result);
+      } else {
+        console.log('Tag 등록 실패. HTTP 상태 코드:', response.status);
+        console.log('Tag 등록 실패. 응답값:', result);
+        if (result && result.result && result.result.message !== undefined) {
+          alert(result.result.message);
+        } else {
+          alert(result.message);
+        }
+      }
+    } catch (error) {
+      console.error('Error during Tag request:', error);
+    }
+  }
+
+  // 서버에 전송할 때 태그 리스트를 가져오는 함수
+  function getTagList() {
+    const tagContainer = document.getElementById('tagContainer');
+    const tagElements = tagContainer.children;
+    const tagList = Array.from(tagElements).map(tagElement => {
+      const tagText = tagElement.querySelector('.tag-name').innerText;
+      return tagText;
+    });
+    return tagList;
+  }
+
+</script>
+</body>
+</html>
