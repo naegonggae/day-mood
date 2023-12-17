@@ -25,8 +25,7 @@ public class UserFindResponse {
 		this.totalPost = totalPost;
 	}
 
-	// view controller 에서 user 정보를 받아 주입해준다.
-	public void setPush(boolean push) {
+	public void addIsPush(boolean push) {
 		this.push = push;
 	}
 }
