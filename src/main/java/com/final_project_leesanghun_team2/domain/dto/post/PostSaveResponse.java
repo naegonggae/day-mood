@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostSaveResponse {
+
     private Long id;
 
     public static PostSaveResponse from(Post post) {
