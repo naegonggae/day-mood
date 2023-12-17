@@ -1,0 +1,282 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header" />
+<style>
+  .contents {
+    margin: 0 0 30px 0;
+  }
+</style>
+<body>
+<head th:replace="fragments/bodyHeader :: bodyHeader" />
+
+<div id="wrap">
+  <section>
+    <div class="container">
+      <article class="user-info-set mt30">
+        <div>
+          <i class="fa fa-user-circle" aria-hidden="true"></i>
+          <p class="nickName" th:text="${user.nickName}"></p>
+          <button type="button" id="isFollow"
+                  th:class="${user.push} ? 'btn btn-secondary' : 'btn btn-primary'"
+                  th:onclick="|followUser(${user.id})|"
+                  th:text="${user.push} ? '팔로잉' : '팔로우'">
+          </button>
+        </div>
+        <div class="mt30">
+          <div class="post-num-set">
+            <p id="postNum" th:text="${user.totalPost}"></p>
+            <p>게시물</p>
+          </div>
+          <!-- // post-num-set -->
+          <div data-bs-toggle="modal" data-bs-target="#followingModal" class="following-set"
+               th:onclick="|loadFollowList(${user.id})|">
+            <p id="followingNum" th:text="${user.followingNum}"></p>
+            <p>팔로잉</p>
+          </div>
+          <!-- // following-set -->
+          <div data-bs-toggle="modal" data-bs-target="#followModal" class="follow-set"
+               th:onclick="|loadFollowingList(${user.id})|">
+            <p id="followNum" th:text="${user.followNum}"></p>
+            <p>팔로워</p>
+          </div>
+          <!-- // follow-set -->
+        </div>
+      </article>
+      <!-- // user-info-set -->
+      <article class="contents" id="postList" th:each="post : ${posts}">
+        <div class="cont-header">
+          <div class="cont-header-user">
+            <i class="fa fa-user-circle" aria-hidden="true"></i>
+            <a class="nickName" th:text="${post.userNickName}"></a>
+          </div>
+        </div>
+        <!-- cont-header -->
+        <div class="cont-post">
+          <div>
+            <p id="postId" th:text="${post.id}"></p>
+            <p th:text="${post.content}"></p>
+          </div>
+          <div class="cont-tag mt15" th:each="tag : ${post.tagList}">
+            <p>#<span th:text="${tag.name}"></span></p>
+          </div>
+          <div class="cont-icon">
+            <ul>
+              <li>
+                <a th:onclick="|pushLike(${post.id})|" style="cursor: pointer;">
+                  <i th:id="likeButton- + ${post.id}" aria-hidden="true"
+                     th:class="${post.push} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
+                  </i>️
+                </a>
+              </li>
+              <li>
+                <a th:id="comment- + ${post.id}" th:onclick="|toggleCommentForm(${post.id})|" style="cursor: pointer;">
+                  <i class="fa fa-comment-o" aria-hidden="true"></i>
+                </a>
+              </li>
+              <p><span th:class="likeCount- + ${post.id}" th:text="${post.likeCount}"></span>명이 좋아합니다.</p>
+            </ul>
+          </div>
+        </div>
+        <!-- cont-post -->
+
+        <div class="comment-set">
+          <div th:id="'commentFormContainer-' + ${post.id}" style="display: none;">
+            <form th:id="'commentForm-' + ${post.id}" class="d-flex">
+              <div class="form-group flex-grow-1">
+                <input class="form-control" th:id="'commentContent-' + ${post.id}" rows="5" placeholder="댓글을 입력하세요." required>
+              </div>
+              <button type="button" class="btn btn-primary" th:onclick="|comment(${post.id})|">
+                <i class="fa fa-angle-up" aria-hidden="true"></i>
+              </button>
+            </form>
+            <div th:id="'commentList-' + ${post.id}" class="comment-list">
+              <!-- 댓글 리스트 정보가 표시됩니다. -->
+            </div>
+          </div>
+        </div>
+        <!-- // comment-set -->
+      </article>
+      <!-- // postList -->
+    </div>
+  </section>
+</div>
+<div th:replace="fragments/modal :: modal" />
+<div th:replace="fragments/footer :: footer" />
+
+<script>
+
+  // 팔로잉 목록 조회
+  async function loadFollowingList(userId) {
+    try {
+      const response = await fetch(`${baseUrl}/api/v1/users/${userId}/followings`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+      const result = await response.json();
+
+      if (result.resultCode === 'SUCCESS') {
+        console.log('팔로잉 목록 로드 성공:', result);
+
+        const followingModalBody = document.getElementById('followModalBody');
+        followingModalBody.innerHTML = '';
+
+        result.result.content.forEach(user => {
+          const following = document.createElement('div');
+          following.innerHTML = `
+                  <div class="follow-child-set">
+                     <div class="cont-follow-header">
+                        <div class="cont-follow-user">
+                          <i onclick="goToUserInfo(${user.id})" class="fa fa-user-circle" aria-hidden="true"></i>
+                          <a onclick="goToUserInfo(${user.id})" class="nickName">${user.nickName}</a>
+                        </div>
+                     </div>
+                    <button id="followButton-${user.id}"
+                       class="${user.push ? 'btn btn-secondary' : 'btn btn-primary'}"
+                       onclick="followUser2(${user.id})"
+                       style="${user.me ? 'display: none;' : 'display: inline-block;'}">
+                       ${user.push ? '팔로잉' : '팔로우'}
+                    </button>
+                  </div>
+          `;
+          followingModalBody.appendChild(following);
+        });
+      } else {
+        console.log('팔로잉 목록 로드 실패. HTTP 상태 코드:', response.status);
+        console.log('팔로잉 목록 로드 실패. 응답값:', result);
+        if (result && result.result && result.result.message !== undefined) {
+          alert(result.result.message);
+        } else {
+          alert(result.message);
+        }
+      }
+    } catch (error) {
+      console.error('Error during Following List request:', error);
+    }
+  }
+
+  // 팔로우 목록 조회
+  async function loadFollowList(userId) {
+    try {
+      const response = await fetch(`${baseUrl}/api/v1/users/${userId}/follows`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+      const result = await response.json();
+
+      if (result.resultCode === 'SUCCESS') {
+        console.log('팔로우 목록 로드 성공:', result);
+
+        const followModalBody = document.getElementById('followingModalBody');
+        followModalBody.innerHTML = '';
+
+        result.result.content.forEach(user => {
+          const follow = document.createElement('div');
+          follow.innerHTML = `
+                  <div class="follow-child-set">
+                     <div class="cont-follow-header">
+                        <div class="cont-follow-user">
+                          <i onclick="goToUserInfo(${user.id})" class="fa fa-user-circle" aria-hidden="true"></i>
+                          <a onclick="goToUserInfo(${user.id})" class="nickName">${user.nickName}</a>
+                        </div>
+                     </div>
+                    <button id="followButton-${user.id}"
+                       class="${user.push ? 'btn btn-secondary' : 'btn btn-primary'}"
+                       onclick="followUser2(${user.id})"
+                       style="${user.me ? 'display: none;' : 'display: inline-block;'}">
+                       ${user.push ? '팔로잉' : '팔로우'}
+                    </button>
+                  </div>
+          `;
+          followModalBody.appendChild(follow);
+        });
+      } else {
+        console.log('팔로우 목록 로드 실패. HTTP 상태 코드:', response.status);
+        console.log('팔로우 목록 로드 실패. 응답값:', result);
+        if (result && result.result && result.result.message !== undefined) {
+          alert(result.result.message);
+        } else {
+          alert(result.message);
+        }
+      }
+    } catch (error) {
+      console.error('Error during Follow List request:', error);
+    }
+  }
+
+  async function followUser2(userId) {
+    try {
+      const response = await fetch(`${baseUrl}/api/v1/users/${userId}/follows`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+      const result = await response.json();
+
+      if (result.resultCode === 'SUCCESS') {
+        console.log('팔로우 이벤트 성공:', result);
+        const push = result.result.push;
+
+        const followButton = document.getElementById(`followButton-${userId}`);
+        followButton.className = `btn ${push ? 'btn-secondary' : 'btn-primary'}`;
+        followButton.innerText = push ? '팔로잉' : '팔로우';
+      } else {
+        alert("나를 팔로우할 수 없습니다.")
+        console.log('팔로우 실패. HTTP 상태 코드:', response.status);
+        console.log('팔로우 실패. 응답값:', result);
+        if (result && result.result && result.result.message !== undefined) {
+          alert(result.result.message);
+        } else {
+          alert(result.message);
+        }
+      }
+    } catch (error) {
+      console.error('Error during Follow request:', error);
+    }
+  }
+
+  async function followUser(userId) {
+    try {
+      const response = await fetch(`${baseUrl}/api/v1/users/${userId}/follows`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+      });
+      const result = await response.json();
+
+      if (result.resultCode === 'SUCCESS') {
+        console.log('팔로우 이벤트 성공:', result);
+        const push = result.result.push;
+        const followingNum = result.result.count;
+
+        document.getElementById('followingNum').innerText = followingNum;
+
+        const isFollow = document.getElementById(`isFollow`);
+        isFollow.className = `${push ? 'btn btn-secondary' : 'btn btn-primary'}`;
+        isFollow.innerText = push ? '팔로잉' : '팔로우';
+      } else {
+        console.log('팔로우 실패. HTTP 상태 코드:', response.status);
+        console.log('팔로우 실패. 응답값:', result);
+        if (result && result.result && result.result.message !== undefined) {
+          alert(result.result.message);
+        } else {
+          alert(result.message);
+        }
+      }
+    } catch (error) {
+      console.error('Error during Follow request:', error);
+    }
+  }
+
+</script>
+</body>
+</html>
