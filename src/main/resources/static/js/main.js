@@ -1,5 +1,6 @@
 'use strict';
-const baseUrl = 'http://localhost:8080';
+// const baseUrl = 'http://localhost:8080';
+const baseUrl = 'ec2-3-38-194-228.ap-northeast-2.compute.amazonaws.com:8080';
 const token = getTokenFromCookie();
 
 // 홈 이동
