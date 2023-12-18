@@ -24,7 +24,7 @@ public class JwtTokenUtil {
 
 	@Value("${jwt.token.secret}")
 	private String SECRET;
-	@Value("${jwt.token.expire_length}")
+	@Value("${jwt.token.expire.length}")
 	private int EXPIRATION_TIME; // 10일 (1/1000초) // (60000 * 10) -> 60000 =1분
 	public static final String TOKEN_PREFIX = "Bearer ";
 	public static final String HEADER_STRING = "Authorization";
