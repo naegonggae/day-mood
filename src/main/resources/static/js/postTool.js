@@ -1,7 +1,7 @@
 // 좋아요
 async function pushLike(postId) {
   try {
-    const response = await fetch(`${baseUrl}/api/v1/posts/${postId}/likes`, {
+    const response = await fetch(`/api/v1/posts/${postId}/likes`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ async function loadComments(postId) {
     const commentListContainer = document.getElementById(`commentList-${postId}`);
     const commentFormContainer = document.getElementById(`commentFormContainer-${postId}`);
 
-    const response = await fetch(`${baseUrl}/api/v1/posts/${postId}/comments`, {
+    const response = await fetch(`/api/v1/posts/${postId}/comments`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ async function comment(postId) {
       content : content,
     };
 
-    const response = await fetch(baseUrl+'/api/v1/posts/'+postId+'/comments', {
+    const response = await fetch('/api/v1/posts/'+postId+'/comments', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ async function loadReplies(postId, commentId) {
     const replyFormContainer = document.getElementById(`replyFormContainer-${commentId}`);
     const replyListContainer = document.getElementById(`replyList-${commentId}`);
 
-    const response = await fetch(`${baseUrl}/api/v1/posts/${postId}/comments/${commentId}/replies`, {
+    const response = await fetch(`/api/v1/posts/${postId}/comments/${commentId}/replies`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ async function addReply(postId, commentId) {
       content: content,
     };
 
-    const response = await fetch(`${baseUrl}/api/v1/posts/${postId}/comments/${commentId}/replies`, {
+    const response = await fetch(`/api/v1/posts/${postId}/comments/${commentId}/replies`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

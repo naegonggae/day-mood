@@ -134,7 +134,7 @@ function getTokenFromCookie() {
 // 내 상세 페이지 이동
 async function goToMyInfo() {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -145,7 +145,7 @@ async function goToMyInfo() {
 
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
-      window.location.href = `${baseUrl}/users/myInfo/${userId}`;
+      window.location.href = `/users/myInfo/${userId}`;
     } else {
       console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
       console.log('유저 확인 실패. 응답값:', result);
@@ -163,7 +163,7 @@ async function goToMyInfo() {
 // 유저 상세 페이지 이동
 async function goToUserInfo(findUserId) {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -175,9 +175,9 @@ async function goToUserInfo(findUserId) {
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
       if (findUserId === userId) {
-        window.location.href = `${baseUrl}/users/myInfo/${findUserId}`;
+        window.location.href = `/users/myInfo/${findUserId}`;
       } else {
-        window.location.href = `${baseUrl}/userInfo/${findUserId}/loginUser/${result.result.id}`;
+        window.location.href = `/userInfo/${findUserId}/loginUser/${result.result.id}`;
       }
     } else {
       console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
@@ -234,7 +234,7 @@ async function feedBackSubmit() {
 // 태그로 게시물 검색
 async function searchPost() {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ async function searchPost() {
       const keyword = document.getElementById('searchInput').value.trim();
       const userId = result.result.id;
       try {
-        const response = await fetch(`${baseUrl}/api/v1/tags?tagName=${encodeURIComponent(keyword)}`, {
+        const response = await fetch(`/api/v1/tags?tagName=${encodeURIComponent(keyword)}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -262,7 +262,7 @@ async function searchPost() {
             return false;
           }
 
-          window.location.href = `${baseUrl}/search/${userId}?keyword=${encodeURIComponent(keyword)}`;
+          window.location.href = `/search/${userId}?keyword=${encodeURIComponent(keyword)}`;
           return false;
         } else {
           console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
@@ -289,7 +289,7 @@ async function searchPost() {
 // 설정 모달 열기
 async function openMyInfoModal() {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -321,7 +321,7 @@ async function openMyInfoModal() {
 // 회원정보 수정
 async function updateMyInfo() {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -378,7 +378,7 @@ async function updateMyInfo() {
 // 유저 삭제
 async function deleteMyInfo() {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -405,7 +405,7 @@ async function deleteMyInfo() {
         });
 
         $('#myModal').modal('hide');
-        window.location.href = `${baseUrl}/`; // 홈페이지로 이동
+        window.location.href = `/`; // 홈페이지로 이동
 
       } catch (error) {
         console.error('회원 삭제 에러 발생:', error);

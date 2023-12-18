@@ -33,7 +33,7 @@
   // 게시물 등록
   async function post() {
     try {
-      const response = await fetch(baseUrl+'/api/v1/users/check', {
+      const response = await fetch('/api/v1/users/check', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@
         };
 
         try {
-          const response = await fetch(baseUrl+'/api/v1/posts', {
+          const response = await fetch('/api/v1/posts', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -66,7 +66,7 @@
 
           if (result.resultCode === 'SUCCESS') {
             console.log('POST 등록 성공:', result);
-            window.location.href = `${baseUrl}/${userId}`;
+            window.location.href = `/${userId}`;
           } else {
             console.log('Post 등록 실패. HTTP 상태 코드:', response.status);
             console.log('Post 등록 실패. 응답값:', result);
@@ -133,7 +133,7 @@
         name : tagName
       };
 
-      const response = await fetch(baseUrl+'/api/v1/tags', {
+      const response = await fetch('/api/v1/tags', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
