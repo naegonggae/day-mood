@@ -6,7 +6,7 @@ const token = getTokenFromCookie();
 // 홈 이동
 async function goLoginHome() {
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/check', {
+    const response = await fetch('/api/v1/users/check', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ async function goLoginHome() {
 
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
-      window.location.href = `${baseUrl}/${userId}`;
+      window.location.href = `/${userId}`;
     } else {
       console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
       console.log('유저 확인 실패. 응답값:', result);
@@ -43,7 +43,7 @@ async function login() {
   };
 
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/login', {
+    const response = await fetch('/api/v1/users/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ async function login() {
     if (result.resultCode === 'SUCCESS') {
       console.log('로그인 성공!');
       $('#loginModal').modal('hide');
-      window.location.href = `${baseUrl}/${result.result.id}`;
+      window.location.href = `/${result.result.id}`;
     } else {
       console.log('로그인 실패. HTTP 상태 코드:', response.status);
       console.log('로그인 실패. 응답값:', result);
@@ -89,7 +89,7 @@ async function join() {
   };
 
   try {
-    const response = await fetch(baseUrl+'/api/v1/users/join', {
+    const response = await fetch('/api/v1/users/join', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ async function join() {
     if (result.resultCode === 'SUCCESS') {
       console.log('회원가입 성공!');
       $('#signupModal').modal('hide');
-      window.location.href = baseUrl+'/';
+      window.location.href = '/';
     } else {
       console.log('회원가입 실패. HTTP 상태 코드:', response.status);
       console.log('회원가입 실패. 응답값:', result);
