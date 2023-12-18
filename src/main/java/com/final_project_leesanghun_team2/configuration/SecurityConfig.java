@@ -34,9 +34,11 @@ public class SecurityConfig {
                 // .cors().and()
 
                 .authorizeRequests()
-                .antMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
-                .antMatchers(HttpMethod.GET, "/**").permitAll()
-                .anyRequest().authenticated().and()
+//                .antMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
+//                .antMatchers(HttpMethod.GET, "/**").permitAll()
+//                .anyRequest().authenticated()
+                .anyRequest().permitAll().and()
+
 
                 // csrf 토큰을 생성하지 않고 httpOnly 조건과 https 통신을 통해서 csrf 공격에 대비함
                 .csrf((csrf) -> csrf.disable())
