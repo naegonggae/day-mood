@@ -145,6 +145,7 @@ async function goToMyInfo() {
       }
     });
     const result = await response.json();
+    console.log('token', token);
 
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
