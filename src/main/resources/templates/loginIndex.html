@@ -11,22 +11,41 @@
 
 <div id="wrap">
 <section id="banner">
-  <div class="container">
+  <div class="container-md">
     <article class="banner">
       <!-- 이미지 슬라이드 -->
       <div class="slider">
-        <div><img src="img/banner_1.png" alt="이미지1"></div>
-        <div><img src="img/banner_2.png" alt="이미지2"></div>
-        <div><img src="img/banner_3.png" alt="이미지3"></div>
+        <div>
+          <picture>
+            <source media="(max-width: 600px)" srcset="img/banner_1_1.png" />
+            <source media="(min-width: 600px)" srcset="img/banner_1.png" />
+            <img src="img/banner_1_1.png" alt="홈페이지 개설 홍보 배너" />
+          </picture>
+        </div>
+        <div>
+          <picture>
+            <source media="(max-width: 600px)" srcset="img/banner_2_2.png" />
+            <source media="(min-width: 600px)" srcset="img/banner_2.png" />
+            <img src="img/banner_2_2.png" alt="홈페이지 홍보 배너" />
+          </picture>
+        </div>
+        <div>
+          <picture>
+            <source media="(max-width: 600px)" srcset="img/banner_3_3.png" />
+            <source media="(min-width: 600px)" srcset="img/banner_3.png" />
+            <img src="img/banner_3_3.png" alt="홈페이지 피드백 조치 결과 배너" />
+          </picture>
+        </div>
       </div>
       <!-- //이미지 슬라이드 -->
+
     </article>
   </div>
 </section>
 <!-- // banner -->
 
 <section id="contents">
-  <div class="container">
+  <div class="container-md">
     <section id="content-left">
       <article class="contents" id="postList" th:each="post : ${posts}">
         <div class="cont-header">
@@ -39,9 +58,9 @@
         <div class="cont-post">
           <div>
             <p id="postId" th:text="${post.id}"></p>
-            <p th:text="${post.content}"></p>
+            <p class="post-content-text" th:text="${post.content}"></p>
           </div>
-          <div class="cont-tag mt15" th:each="tag : ${post.tagList}">
+          <div class="cont-tag" th:each="tag : ${post.tagList}">
             <p>#<span th:text="${tag.name}"></span></p>
           </div>
           <div class="cont-icon">

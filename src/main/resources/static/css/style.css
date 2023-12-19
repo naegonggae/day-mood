@@ -12,8 +12,7 @@ body {background-color: #EEEEEE}
 #footer {background-color: #545454;}
 
 /* 컨테이너 */
-.container {
-  width: 1200px;
+.container-md {
   margin: 0 auto;
 }
 
@@ -135,20 +134,23 @@ body {background-color: #EEEEEE}
 .contents .cont-post #postId {
     display: none;
 }
+.contents .cont-post .post-content-text {
+    margin-bottom: 15px;
+    font-size: 20px;
+}
 .contents .cont-tag {
     display: inline-block;
 }
 .contents .cont-tag p {
-    /*font-style: italic;*/
-    font-size: 25px;
+    font-size: 18px;
     font-family: 'Abel', sans-serif;
     color: #0096c6;
-    display: inline-block; 
-    margin: 2px 2px 2px 0;
+    display: inline-block;
+    margin: 0px 2px 0px 0;
 }
 .contents .cont-tag span {
     font-style: normal;
-    font-size: 25px;
+    font-size: 18px;
     font-family: 'Abel', sans-serif;
     color: #0096c6;
 }
@@ -290,7 +292,7 @@ footer {
     position: relative;
     transform: translatY(-100%);
 }
-.footer {text-align: center; padding: 30px 50px; font-weight: bold; color: #bdbebd; font-size: 13px;} 
+.footer {text-align: center; padding: 30px 50px; font-weight: bold; color: #bdbebd; font-size: 13px;}
 .footer p {margin-top: 10px;}
 
 /* postForm */
@@ -447,68 +449,136 @@ footer {
   font-size: 20px;
 }
 
-/* alert */
-.alert {
-  padding: 15px;
-  background-color: #f44336; /* 빨간색 */
-  color: white;
-  border-radius: 5px;
-  display: none;
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  z-index: 1;
-}
-
-.close {
-  position: absolute;
-  top: 0;
-  right: 15px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-/* 화면 너비 0 ~ 1220px */
-@media (max-width: 1220px) {
+/* 화면 너비 0 ~ 1200px */
+@media (max-width: 1200px) {
+  /* post Form */
   .container-post-form {width: 800px;}
+
+  /* 피드백 모달 */
+  .modal-body .feedback-modal {font-size: 20px; margin: 20px 0 70px 0;}
+  .modal-body .xl-modal-body-width textarea {height: 150px;}
+  .modal-body .xl-modal-body-width {width: 500px;}
+  .modal-body .xl-modal-text {height: 40px; font-size: 20px;}
+  .modal-body .xl-modal-input .modal-button-set-xl button {
+    width: 500px;
+    font-size: 20px;
+    height: 50px;
+    margin-bottom: 30px;
+  }
 }
 
 /* 화면 너비 0 ~ 1024px */
 @media (max-width: 1024px){
+  /* post Form */
   .container-post-form {width: 600px;}
+
+  /* 피드백 모달 */
+  .modal-body .feedback-modal {font-size: 20px; margin: 20px 0 70px 0;}
+  .modal-body .xl-modal-body-width textarea {height: 150px;}
+  .modal-body .xl-modal-body-width {width: 400px;}
+  .modal-body .xl-modal-text {height: 40px; font-size: 20px;}
+  .modal-body .xl-modal-input .modal-button-set-xl button {
+    width: 400px;
+    font-size: 20px;
+    height: 50px;
+    margin-bottom: 30px;
+  }
 }
 
 /* 화면 너비 0 ~ 960px */
 @media (max-width: 960px){
 }
 
-/* 화면 너비 0 ~ 768px */
+/* 화면 너비 0 ~ 768px 여기부터 모바일 버전으로 변해야함 */
 @media (max-width: 768px) {
-    .header .header-right {float: none;}
-    #content-right {display: none;}
-    #content-left {width: 100%;}
-    #content-left .contents {margin-right: 0;}
-    .container-post-form {width: 500px;}
-}
-/* 화면 너비 0 ~ 600px */
-@media (max-width: 600px){
-    .container {width: 480px;}
-    .container-post-form {width: 400px;}
+  #content-right {display: none;}
+  #content-left {width: 100%;}
+  #content-left .contents {margin-right: 0;}
+
+  /* post Search */
+  .container-post-form {width: 500px;}
 }
 
-/* 화면 너비 0 ~ 480px */ /* 보통 스마트폰 픽셀 */ 
+/* 화면 너비 0 ~ 600px */
+@media (max-width: 600px){
+  /* index 헤더 */
+  .header .header-right {float: none;}
+  .header .header-right .search-form {display: block;}
+  .header .header-right .dropdown {display: inline-block;}
+  .header .header-right .header-add-post {padding-left: 0;}
+  .header-right button {margin-bottom: 5px;}
+
+  /* post Search */
+  .tag-search-set {font-size: 15px;}
+
+  /* post Form */
+  .container-post-form {width: 400px;}
+
+  /* user info */
+  .user-info-set .fa-user-circle {font-size: 130px;}
+  .user-info-set .nickName {font-size: 40px;}
+  .user-info-set button {
+    position: static;
+    display: block;
+    margin: 5px auto;
+    font-size: 10px;
+  }
+  .user-info-set .post-num-set {padding: 10px; font-size: 18px;}
+  .user-info-set .following-set {padding: 10px; font-size: 18px;}
+  .user-info-set .follow-set {padding: 10px; font-size: 18px;}
+
+  /* 모달 */
+  .modal-header .modal-title{font-size: 20px;}
+  .modal-body {padding: 20px;}
+  .modal-body .welcome-text {font-size: 20px; margin: 20px 0 70px 0;}
+  .modal-body .modal-input {height: 30px; font-size: 14px;}
+  .modal-body .modal-body-width {width: 250px;}
+  .modal-body .modal-button-set {margin: 10px 0 30px 0;}
+  .modal-body .modal-button-set button {width: 250px; font-size: 12px; height: 30px;}
+
+  .modal-body .feedback-modal {font-size: 15px; margin: 20px 0 70px 0;}
+  .modal-body .xl-modal-input .modal-button-set-xl button {
+    width: 250px;
+    font-size: 12px;
+    height: 30px;
+    margin-bottom: 30px;
+  }
+
+  /* 팔로우 모달 */
+  .cont-follow-header {font-size: 20px;}
+  .follow-child-set button {font-size: 10px;}
+}
+
+/* 화면 너비 0 ~ 480px */ /* 보통 스마트폰 픽셀 */
 @media (max-width: 480px) {
-    .container {width: 320px;}
-    .header .header-right form {display: block;}
-    .header .header-right .header-add-post {padding-left: 0;}
-    .container-post-form {width: 300px;}
+  /* post Form */
+  .container-post-form {width: 300px;}
+
+  /* index 게시물 */
+  .contents .cont-header-user {margin: 20px 0 0 5px;}
+  .contents .cont-post {padding: 20px 0px 20px 10px;}
+  .contents .cont-tag p {font-size: 16px;}
+  .contents .cont-tag span {font-size: 16px;}
+
+  /* 댓글 */
+  .contents .comment-set {padding: 0px 10px 20px 10px;}
+  .contents .comment-set .comment-list .cont-cmt-user {margin: 10px 0 0 10px;}
+  .contents .comment-set .comment-list .cmt-info {margin: 5px 0px 5px 20px;}
+  .contents .comment-set .comment-list .reply-btn {margin-left: 20px;}
+
+  /* 답글 */
+  .contents .reply-set {padding: 0px 0px 10px 20px;}
+  .contents .comment-set .reply-list .rp-info {margin: 5px 0px 5px 10px;}
+  .pagination .page-link {font-size: 7px;}
+}
+
+/* 화면 너비 0 ~ 360px */
+@media (max-width: 360px){
+  .banner {display: none;}
 }
 
 /* 화면 너비 0 ~ 320px */
 @media (max-width: 320px){
-    .container {width: 200px;}
-    .banner {display: none;}
-    .container-post-form {width: 200px;}
+  /* post Form */
+  .container-post-form {width: 200px;}
 }
