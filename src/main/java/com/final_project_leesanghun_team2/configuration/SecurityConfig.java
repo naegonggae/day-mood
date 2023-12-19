@@ -50,12 +50,12 @@ public class SecurityConfig {
                 // 에러 핸들링
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler).and()
+                .accessDeniedHandler(jwtAccessDeniedHandler).and();
 
                 // 인증필터 적용
 //                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 // 인증과정에서 발생한 에러 핸들링
-                .addFilterBefore(jwtExceptionFilter, JwtAuthorizationFilter.class);
+//                .addFilterBefore(jwtExceptionFilter, JwtAuthorizationFilter.class);
 
         return http.build();
     }
