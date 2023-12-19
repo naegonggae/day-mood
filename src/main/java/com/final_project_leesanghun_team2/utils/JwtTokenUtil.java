@@ -34,10 +34,10 @@ public class JwtTokenUtil {
 		Long userId = principalDetails.getUser().getId();
 		//access token 생성
 		String jwtToken = JWT.create()
-				.withSubject(principalDetails.getUsername())
+				.withSubject(principalDetails.getUsername()) // 이메일
 				.withIssuedAt(new Date(System.currentTimeMillis()))
 				.withExpiresAt(new Date(System.currentTimeMillis()+EXPIRATION_TIME)) // 만료시간
-				.withClaim("username", principalDetails.getUsername())
+				.withClaim("username", principalDetails.getUsername()) // 이메일
 				.withClaim("role", principalDetails.getUser().getRole().toString())
 				.sign(Algorithm.HMAC512(SECRET)); // SECRET = 사이트만 알고있는 고유값
 
@@ -50,7 +50,7 @@ public class JwtTokenUtil {
 		try {
 			String username = JWT.require(Algorithm.HMAC512(SECRET))
 					.build().verify(jwtToken).getClaim("username").asString();
-			log.info("username: "+username);
+			log.info("username 의 토큰을 검증했습니다.: ", username);
 			return username;
 		} catch (SignatureVerificationException e) {
 			throw new JwtException("토큰의 서명이 올바르지 않습니다. 변조되었을 우려가 있으니 확인해보십시오.", e);
