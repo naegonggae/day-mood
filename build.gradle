@@ -49,8 +49,8 @@ dependencies {
 	implementation "io.springfox:springfox-boot-starter:3.0.0"
 
 	// Logback
-	implementation 'org.slf4j:slf4j-api:1.7.32' // SLF4J API
-	implementation 'ch.qos.logback:logback-classic:1.2.6' // Logback Classic 모듈
+	implementation 'org.slf4j:slf4j-api' // SLF4J API
+	implementation 'ch.qos.logback:logback-classic' // Logback Classic 모듈
 }
 
 tasks.named('test') {
