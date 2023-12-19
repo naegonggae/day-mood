@@ -51,14 +51,12 @@ async function login() {
       body: JSON.stringify(data),
     });
     const result = await response.json();
-    const accessToken = response.headers.get('Authorization');
-    console.log('accessToken', accessToken);
 
     if (result.resultCode === 'SUCCESS') {
       console.log('로그인 성공!');
 
       $('#loginModal').modal('hide');
-      // window.location.href = `/${result.result.id}`;
+      window.location.href = `/${result.result.id}`;
     } else {
       console.log('로그인 실패. HTTP 상태 코드:', response.status);
       console.log('로그인 실패. 응답값:', result);
@@ -145,11 +143,10 @@ async function goToMyInfo() {
       }
     });
     const result = await response.json();
-    console.log('token', token);
 
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
-      // window.location.href = `/users/myInfo/${userId}`;
+      window.location.href = `/users/myInfo/${userId}`;
     } else {
       console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
       console.log('유저 확인 실패. 응답값:', result);
