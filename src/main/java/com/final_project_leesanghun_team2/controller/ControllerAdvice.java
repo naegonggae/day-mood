@@ -2,7 +2,7 @@ package com.final_project_leesanghun_team2.controller;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.final_project_leesanghun_team2.domain.Response;
-import com.final_project_leesanghun_team2.exception.DreamTracksException;
+import com.final_project_leesanghun_team2.exception.DayMoodException;
 import com.final_project_leesanghun_team2.domain.ErrorResponse;
 import io.jsonwebtoken.JwtException;
 import javax.validation.ConstraintViolationException;
@@ -24,8 +24,8 @@ public class ControllerAdvice {
 	private final HttpStatus ISE = HttpStatus.INTERNAL_SERVER_ERROR;
 	private final HttpStatus UA = HttpStatus.UNAUTHORIZED;
 
-	@ExceptionHandler(DreamTracksException.class)
-	public ResponseEntity<Response> dreamTracksExceptionHandler(DreamTracksException exception) {
+	@ExceptionHandler(DayMoodException.class)
+	public ResponseEntity<Response> dreamTracksExceptionHandler(DayMoodException exception) {
 		return ResponseEntity.status(exception.getStatus())
 				.body(Response.error(ErrorResponse.from(exception)));
 	}
