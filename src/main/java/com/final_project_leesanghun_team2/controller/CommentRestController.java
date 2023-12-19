@@ -10,8 +10,6 @@ import com.final_project_leesanghun_team2.domain.dto.comment.ReplyFindResponse;
 import com.final_project_leesanghun_team2.domain.dto.comment.request.ReplySaveRequest;
 import com.final_project_leesanghun_team2.domain.dto.comment.ReplySaveResponse;
 import com.final_project_leesanghun_team2.service.CommentService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +25,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
-@Api(tags = {"Comment API"})
 public class CommentRestController {
 
     private final CommentService commentService;
 
     // 댓글 등록
-    @ApiOperation(value = "Comment 작성", notes = "Path variable에 해당하는 포스트에, 입력한 comment 내용을 저장")
     @PostMapping("/{postId}/comments")
     public ResponseEntity<Response<CommentSaveResponse>> saveComment(
             @PathVariable Long postId,
@@ -57,7 +53,6 @@ public class CommentRestController {
     }
 
     // 댓글 조회
-    @ApiOperation(value = "Comment 리스트 조회", notes = "작성된 댓글을 최신순으로 10개씩 페이징 해서 가져온다.")
     @GetMapping("/{postId}/comments")
     public ResponseEntity<Response<Page<CommentFindResponse>>> findAllComments(
             @PathVariable Long postId,
@@ -78,7 +73,6 @@ public class CommentRestController {
     }
 
     // 댓글 수정
-    @ApiOperation(value = "Comment 수정", notes = "(유효한 jwt Token 필요) path variable로 입력한 postId의 Post의 commentId의 내용을 수정")
     @PutMapping("/{postId}/comments/{cmtId}")
     public ResponseEntity<Void> updateComment(
             @PathVariable Long postId, @PathVariable Long cmtId,
@@ -89,7 +83,6 @@ public class CommentRestController {
     }
 
     // 댓글 삭제
-    @ApiOperation(value = "Comment 삭제", notes = "(유효한 jwt Token 필요) path variable로 입력한 postId의 Post의 commentId의 Comment를 삭제")
     @DeleteMapping("/{postId}/comments/{cmtId}")
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long postId, @PathVariable Long cmtId,

@@ -12,8 +12,6 @@ import com.final_project_leesanghun_team2.domain.dto.user.UserJoinResponse;
 import com.final_project_leesanghun_team2.domain.dto.user.request.UserLoginRequest;
 import com.final_project_leesanghun_team2.domain.dto.user.request.UserUpdateRequest;
 import com.final_project_leesanghun_team2.service.UserService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import java.net.URI;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-@Api(tags = {"User API"})
 @Slf4j
 public class UserRestController {
 
@@ -40,7 +37,6 @@ public class UserRestController {
     }
 
     // 회원가입
-    @ApiOperation(value = "회원 가입", notes = "userName, password로 회원 데이터 저장")
     @PostMapping("/join")
     public ResponseEntity<Response<UserJoinResponse>> join(@Valid @RequestBody UserJoinRequest request) {
         log.debug("join 시작");
@@ -51,7 +47,6 @@ public class UserRestController {
     }
 
     // 로그인
-    @ApiOperation(value = "회원 로그인", notes = "userName, password로 저장된 회원 데이터가 있으면 jwt Token 반환")
     @PostMapping("/login")
     public ResponseEntity<Response<UserLoginResponse>> login(@Valid @RequestBody UserLoginRequest request,
             HttpServletResponse response) {

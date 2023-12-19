@@ -7,8 +7,6 @@ import com.final_project_leesanghun_team2.domain.dto.post.PostSaveResponse;
 import com.final_project_leesanghun_team2.domain.dto.post.request.PostUpdateRequest;
 import com.final_project_leesanghun_team2.domain.dto.post.request.PostSaveRequest;
 import com.final_project_leesanghun_team2.service.PostService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,14 +23,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
-@Api(tags = {"Post API"})
 @Slf4j
 public class PostRestController {
 
     private final PostService postService;
 
     // 게시물 등록
-    @ApiOperation(value = "Post 추가", notes = "(유효한 jwt Token 필요) title, body 데이터를 저장")
     @PostMapping
     public ResponseEntity<Response<PostSaveResponse>> savePost(
             @Valid @RequestBody PostSaveRequest request,
@@ -45,7 +41,6 @@ public class PostRestController {
     }
 
     // 태그별 게시물 조회
-    @ApiOperation(value = "Post 리스트 조회", notes = "작성된 게시글을 최신순으로 20개씩 페이징 해서 가져온다.")
     @GetMapping("/tag")
     public ResponseEntity<Response<Page<PostFindResponse>>> findByTag(
             @PageableDefault(size = 10)
@@ -56,7 +51,6 @@ public class PostRestController {
     }
 
     // 게시물 전체 조회
-    @ApiOperation(value = "마이 피드 기능 (작성한 게시글 모아보기)", notes = "(유효한 jwt Token 필요) 토큰 정보로 작성한 게시글 조회")
     @GetMapping
     public ResponseEntity<Response<Page<PostFindResponse>>> findAllPosts(
             @PageableDefault(size = 10)
@@ -68,7 +62,6 @@ public class PostRestController {
     }
 
     // 내 게시물 전체 조회
-    @ApiOperation(value = "마이 피드 기능 (작성한 게시글 모아보기)", notes = "(유효한 jwt Token 필요) 토큰 정보로 작성한 게시글 조회")
     @GetMapping("/me")
     public ResponseEntity<Response<Page<PostFindResponse>>> findMyPosts(
             @PageableDefault(size = 10)
@@ -81,7 +74,6 @@ public class PostRestController {
     }
 
     // user id 의 게시물 전체 조회
-    @ApiOperation(value = "마이 피드 기능 (작성한 게시글 모아보기)", notes = "(유효한 jwt Token 필요) 토큰 정보로 작성한 게시글 조회")
     @GetMapping("/users/{id}")
     public ResponseEntity<Response<Page<PostFindResponse>>> findUserPost(
             @PathVariable Long id,
@@ -94,7 +86,6 @@ public class PostRestController {
     }
 
     // 게시물 단건 조회
-    @ApiOperation(value = "Post 단건 조회", notes = "path variable로 입력한 postId의 상세 정보를 가져온다.")
     @GetMapping("/{id}")
     public ResponseEntity<Response<PostFindResponse>> findOne(@PathVariable Long id) {
         log.info("findOne 시작");
@@ -104,7 +95,6 @@ public class PostRestController {
     }
 
     // 게시물 수정
-    @ApiOperation(value = "Post 수정", notes = "(유효한 jwt Token 필요) path variable로 입력한 postId의 Post를 title, body 로 수정")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updatePost(
             @PathVariable Long id,
@@ -117,7 +107,6 @@ public class PostRestController {
     }
 
     // 게시물 삭제
-    @ApiOperation(value = "Post 삭제", notes = "(유효한 jwt Token 필요) path variable로 입력한 postId의 Post 삭제")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long id,
