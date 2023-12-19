@@ -87,5 +87,10 @@ jobs:
           script: |
             sudo docker rm -f ${{ secrets.DOCKER_REPO }}
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
-            sudo docker run -d -p 8080:8080 --name ${{ secrets.DOCKER_REPO }} -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.EC2_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            sudo docker run -d -p 8080:8080 --name ${{ secrets.DOCKER_REPO }} \
+              -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.EC2_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} \
+              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} \
+              -e JWT_TOKEN_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_EXPIRE_LENGTH }} \
+              ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
             sudo docker image prune -f
