@@ -432,3 +432,10 @@ function showConfirmationDialog(message) {
     resolve(confirmed);
   });
 }
+
+function logout() {
+  // 클라이언트에서 accessToken 쿠키를 삭제
+  document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+  window.location.href = "/";
+}
