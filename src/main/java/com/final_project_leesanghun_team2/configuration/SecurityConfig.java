@@ -34,10 +34,10 @@ public class SecurityConfig {
                 // .cors().and()
 
                 .authorizeRequests()
-//                .antMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
-//                .antMatchers(HttpMethod.GET, "/**").permitAll()
-//                .anyRequest().authenticated()
-                .anyRequest().permitAll().and()
+                .antMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
+                .antMatchers(HttpMethod.GET, "/**").permitAll()
+                .anyRequest().authenticated().and()
+//                .anyRequest().permitAll().and()
 
 
                 // csrf 토큰을 생성하지 않고 httpOnly 조건과 https 통신을 통해서 csrf 공격에 대비함
@@ -50,12 +50,12 @@ public class SecurityConfig {
                 // 에러 핸들링
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler).and();
+                .accessDeniedHandler(jwtAccessDeniedHandler).and()
 
                 // 인증필터 적용
-//                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 // 인증과정에서 발생한 에러 핸들링
-//                .addFilterBefore(jwtExceptionFilter, JwtAuthorizationFilter.class);
+                .addFilterBefore(jwtExceptionFilter, JwtAuthorizationFilter.class);
 
         return http.build();
     }
