@@ -61,7 +61,7 @@ public class UserRestController {
         // 쿠키 설정
         Cookie cookie = new Cookie("accessToken", result.getAccessToken());
         cookie.setPath("/");
-        cookie.setSecure(true);
+//        cookie.setSecure(true); // https 연결
         cookie.isHttpOnly();
         cookie.setMaxAge(3600); // 쿠키 유효 시간 설정 (초 단위, 여기서는 1시간)
         response.addCookie(cookie);
