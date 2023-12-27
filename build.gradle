@@ -30,6 +30,7 @@ dependencies {
 
 	// DB
 	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.h2database:h2'
 
 	// 타임리프
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

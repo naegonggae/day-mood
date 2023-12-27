@@ -1,23 +1,17 @@
 server:
   port: 8080
-spring:
   # swagger
   mvc:
     path_match:
       matching-strategy: ant_path_matcher
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: localhost
-    username: root
-    password: 1234
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        default_batch_fetch_size: 100
-  #        use_sql_comments: true # show jpql in console
 logging:
   level:
     org.hibernate.SQL: debug
+---
+spring:
+  profiles:
+    active: local
+---
+spring:
+  profiles:
+    active: prod
