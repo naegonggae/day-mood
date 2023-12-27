@@ -59,4 +59,8 @@ public class Post extends BaseEntity {
         this.likeCount--;
     }
 
+    // 배치 - 실제 좋아요 개수로 갱신
+    public void updateLikeCount(Long likeCount) {
+        this.likeCount = likeCount;
+    }
 }
