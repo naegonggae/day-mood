@@ -93,8 +93,8 @@ jobs:
               -e JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} \
               -e JWT_TOKEN_ACCESS_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_ACCESS_EXPIRE_LENGTH }} \
               -e JWT_TOKEN_REFRESH_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_REFRESH_EXPIRE_LENGTH }} \
-              -e REDIS_HOST=${{ secrets.EC2_HOST }} \
+              -e REDIS_HOST=${{ secrets.DATA_REDIS_HOST }} \
               -e REDIS_PORT=6379 \
-              -e REDIS_PASSWORD=${{ secrets.DB_PASSWORD }} \
+              -e REDIS_PASSWORD=${{ secrets.DATA_REDIS_PASSWORD }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
             sudo docker image prune -f
