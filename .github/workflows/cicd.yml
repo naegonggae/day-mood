@@ -91,6 +91,10 @@ jobs:
               -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.EC2_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }} \
               -e SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} \
-              -e JWT_TOKEN_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_EXPIRE_LENGTH }} \
+              -e JWT_TOKEN_ACCESS_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_ACCESS_EXPIRE_LENGTH }} \
+              -e JWT_TOKEN_REFRESH_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_REFRESH_EXPIRE_LENGTH }} \
+              -e REDIS_HOST=${{ secrets.EC2_HOST }} \
+              -e REDIS_PORT=6379 \
+              -e REDIS_PASSWORD=${{ secrets.DB_PASSWORD }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
             sudo docker image prune -f
