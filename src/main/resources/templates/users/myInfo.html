@@ -106,7 +106,7 @@
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
+          'Authorization': 'Bearer ' + getTokenFromCookie(),
         },
       });
       const result = await response.json();
@@ -158,7 +158,7 @@
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
+          'Authorization': 'Bearer ' + getTokenFromCookie(),
         },
       });
       const result = await response.json();
@@ -208,7 +208,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
+          'Authorization': 'Bearer ' + getTokenFromCookie(),
         },
       });
       const result = await response.json();

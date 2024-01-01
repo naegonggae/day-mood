@@ -5,7 +5,7 @@ async function pushLike(postId) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       },
     });
     const result = await response.json();
@@ -135,7 +135,7 @@ async function comment(postId) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       },
       body: JSON.stringify(data),
     });
@@ -244,7 +244,7 @@ async function addReply(postId, commentId) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       },
       body: JSON.stringify(data),
     });

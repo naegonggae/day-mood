@@ -1,7 +1,4 @@
 'use strict';
-// const baseUrl = 'http://localhost:8080';
-const baseUrl = 'ec2-3-38-194-228.ap-northeast-2.compute.amazonaws.com:8080';
-const token = getTokenFromCookie();
 
 // 홈 이동
 async function goLoginHome() {
@@ -10,7 +7,7 @@ async function goLoginHome() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -139,7 +136,7 @@ async function goToMyInfo() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -168,7 +165,7 @@ async function goToUserInfo(findUserId) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -209,7 +206,7 @@ async function feedBackSubmit() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       },
       body: JSON.stringify(data)
     });
@@ -239,7 +236,7 @@ async function searchPost() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -294,7 +291,7 @@ async function openMyInfoModal() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -326,7 +323,7 @@ async function updateMyInfo() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -340,7 +337,7 @@ async function updateMyInfo() {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token,
+            'Authorization': 'Bearer ' + getTokenFromCookie(),
           },
           body: JSON.stringify({ nickName: newNickname }),
         });
@@ -383,7 +380,7 @@ async function deleteMyInfo() {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token,
+        'Authorization': 'Bearer ' + getTokenFromCookie(),
       }
     });
     const result = await response.json();
@@ -401,7 +398,7 @@ async function deleteMyInfo() {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token,
+            'Authorization': 'Bearer ' + getTokenFromCookie(),
           },
         });
 
