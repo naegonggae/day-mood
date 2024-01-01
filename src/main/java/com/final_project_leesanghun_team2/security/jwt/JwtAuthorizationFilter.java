@@ -36,8 +36,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 		// header 에 Authorization 항목 가져오기
 		String jwtHeader = request.getHeader(jwtTokenUtil.HEADER_STRING); // "Authorization"
-		logger.info("jwtHeader : "+jwtHeader); // 이거 지워야함
-
 		String requestURI = request.getRequestURI();
 		logger.info("requestURI : "+requestURI);
 
@@ -62,7 +60,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 		// 헤더 형식 제외하고 생 토큰만 추출
 		String jwtToken = request.getHeader(jwtTokenUtil.HEADER_STRING).replace(jwtTokenUtil.TOKEN_PREFIX, "");
-		logger.info("헤더를 제외한 토큰: "+jwtToken); // 이거도 나중에 삭제 필요
 
 		// 서명 검증
 		AuthorizationDto authorizationDto = jwtTokenUtil.validateToken(jwtToken);
