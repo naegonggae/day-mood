@@ -16,7 +16,7 @@ public class PrincipalDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return null;
-	} // 권한 연결 해줘야함
+	}
 
 	@Override
 	public String getPassword() {

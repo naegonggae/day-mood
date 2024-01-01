@@ -58,10 +58,10 @@ public class UserRestController {
         cookie.setPath("/");
 //        cookie.setSecure(true); // https 연결
         cookie.isHttpOnly();
-        cookie.setMaxAge(3600); // 쿠키 유효 시간 설정 (초 단위, 여기서는 1시간)
+        cookie.setMaxAge(60 * 30); // 쿠키 유효 시간 설정 (초 단위, 현재 30분)
         response.addCookie(cookie);
 
-        // access Token 은 body 로 전송
+        // access Token 은 body 로 전송 - postMan 토큰 전달 목적
         response.addHeader("Authorization", "Bearer " + result.getAccessToken());
 
         log.info("사용자 {} 가 로그인함", result.getId());

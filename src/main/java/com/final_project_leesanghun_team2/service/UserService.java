@@ -25,9 +25,13 @@ import com.final_project_leesanghun_team2.exception.user.NoSuchUserException;
 import com.final_project_leesanghun_team2.repository.UserRepository;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -40,6 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor @Slf4j
 public class UserService {
 
+    @Qualifier("refreshTokenRedisTemplate")
+    private final RedisTemplate<String, String> refreshTokenRedisTemplate;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
@@ -88,6 +94,13 @@ public class UserService {
         // 엑세스 토큰 생성
         TokenResponse tokenResponse = jwtTokenUtil.createToken(principalDetails);
 
+        log.info("토큰 생성까지 완료");
+        // 레디스에 리프레쉬 토큰 저장
+        refreshTokenRedisTemplate.opsForValue()
+                .set(authentication.getName(),
+                tokenResponse.getRefreshToken(), jwtTokenUtil.REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS); // REFRESH_TOKEN_EXPIRE_TIME 동안 저장 후 삭제
+
+        log.info("레디스에 저장했다!");
         return tokenResponse;
     }
 
@@ -189,9 +202,6 @@ public class UserService {
 
         userRepository.delete(findUser);
     }
-
-    // 로그아웃
-    // js 함수로 쿠키에 있는 엑세스 토큰을 제거한다.
 
     private void checkDuplicationNickname(UserJoinRequest request) {
         boolean findNickName = userRepository.existsByNickName(request.getNickName());

@@ -1,4 +1,4 @@
-package com.final_project_leesanghun_team2.security.exception;
+package com.final_project_leesanghun_team2.security.error_handling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.final_project_leesanghun_team2.domain.Response;
@@ -18,14 +18,13 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
-	// 인증은 됐으나 특정 리소스에 대한 권한이 없는 경우. 403 forbidden
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response,
 			AccessDeniedException e) throws IOException, ServletException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		log.error("No Authorities", e);
 		log.error("Request Uri : {}", request.getRequestURI());
-		log.info("엑세스 권한이 없습니다.");
+		log.error("인증은 됐으나 특정 리소스에 대한 권한이 없는 경우, 403 forbidden.");
 
 		ErrorResponse errorResponse = new ErrorResponse(e.getClass().getSimpleName(),
 				"JwtAccessDeniedHandler 에 들어왔습니다.");
@@ -37,7 +36,6 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 		response.getWriter()
 				.write(objectMapper.writeValueAsString(error)); //Response 객체를 response 의 바디값으로 파싱
 
-		log.error("[handle] 접근이 거부되어 경로 리다이렉트");
 		response.sendRedirect("/index");
 
 	}
