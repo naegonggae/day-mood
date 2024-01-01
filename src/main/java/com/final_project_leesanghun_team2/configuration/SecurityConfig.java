@@ -1,9 +1,9 @@
 package com.final_project_leesanghun_team2.configuration;
 
-import com.final_project_leesanghun_team2.security.exception.JwtAccessDeniedHandler;
-import com.final_project_leesanghun_team2.security.exception.JwtAuthenticationEntryPoint;
+import com.final_project_leesanghun_team2.security.error_handling.JwtAccessDeniedHandler;
+import com.final_project_leesanghun_team2.security.error_handling.JwtAuthenticationEntryPoint;
 import com.final_project_leesanghun_team2.security.jwt.JwtAuthorizationFilter;
-import com.final_project_leesanghun_team2.security.exception.JwtExceptionFilter;
+import com.final_project_leesanghun_team2.security.error_handling.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/api/v1/users/join", "/api/v1/users/login").permitAll()
                 .antMatchers(HttpMethod.GET, "/**").permitAll()
+//                .antMatchers(HttpMethod.POST, "/data/**").permitAll()
                 .anyRequest().authenticated().and()
 //                .anyRequest().permitAll().and()
 
