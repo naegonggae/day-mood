@@ -75,7 +75,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 			cookie.setPath("/");
 //        cookie.setSecure(true); // https 연결
 			cookie.isHttpOnly();
-			cookie.setMaxAge(60 * 30); // 쿠키 유효 시간 설정 (초 단위, 현재 30분)
+			cookie.setMaxAge(60 * 60 * 24 * 7 * 2); // 쿠키 유효 시간 설정 (초 단위, 2주)
 			response.addCookie(cookie);
 		}
 
