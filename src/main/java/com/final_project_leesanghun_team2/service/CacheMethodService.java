@@ -6,6 +6,7 @@ import com.final_project_leesanghun_team2.domain.entity.TagPost;
 import com.final_project_leesanghun_team2.domain.entity.User;
 import com.final_project_leesanghun_team2.repository.PostRepository;
 import com.final_project_leesanghun_team2.repository.TagPostRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -22,8 +23,8 @@ public class CacheMethodService {
 	private final TagPostRepository tagPostRepository;
 
 	@Cacheable(cacheNames = "tagPosts", key = "#findTag.id")
-    public Page<TagPost> getTagPosts(Pageable pageable, Tag findTag) {
-        return tagPostRepository.findAllByTag(findTag, pageable);
+    public List<TagPost> getTagPosts(Tag findTag) {
+        return tagPostRepository.findAllByTag(findTag);
     }
 
 	@Cacheable(cacheNames = "myPosts", key = "#user.id")

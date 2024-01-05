@@ -28,12 +28,12 @@ public class CacheEvictService {
 		// "top5UserHasMostFollowingList" 캐시의 모든 데이터를 삭제
 	}
 
-	public void evictCacheUserPosts(Long id) {
-		cacheManager.getCache("userPosts").evict(id);
-		cacheManager.getCache("myPosts").evict(id);
+	public void evictUserPosts(Long userId) {
+		cacheManager.getCache("userPosts").evict(userId);
+		cacheManager.getCache("myPosts").evict(userId);
 	}
 
-	public void evictCacheTagPosts(List<TagPost> tagPosts) {
+	public void evictTagPosts(List<TagPost> tagPosts) {
 		tagPosts.stream().forEach(tagPost -> {
 			cacheManager.getCache("tagPosts").evict(tagPost.getTag().getId());
 		});

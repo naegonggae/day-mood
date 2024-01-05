@@ -1,5 +1,6 @@
 package com.final_project_leesanghun_team2.controller;
 
+import com.final_project_leesanghun_team2.domain.dto.post.PostDefaultResponse;
 import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
 import com.final_project_leesanghun_team2.domain.Response;
 import com.final_project_leesanghun_team2.domain.dto.post.PostFindResponse;
@@ -40,57 +41,60 @@ public class PostRestController {
                 .body(Response.success(result));
     }
 
-    // 태그별 게시물 조회
+    // 태그로 검색된 게시물들
     @GetMapping("/tag")
-    public ResponseEntity<Response<Page<PostFindResponse>>> findByTag(
+    public ResponseEntity<Response<Page<PostFindResponse>>> findPostsByTag(
+            @AuthenticationPrincipal PrincipalDetails details,
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @RequestParam(name = "tagName") String tagName) {
-        Page<PostFindResponse> result = postService.findByTag(pageable, tagName);
+        Page<PostFindResponse> result = postService.findPostsByTag(pageable, tagName, details.getUser().getId());
         return ResponseEntity.ok().body(Response.success(result));
     }
 
-    // 게시물 전체 조회
+    // 전체 게시물
     @GetMapping
-    public ResponseEntity<Response<Page<PostFindResponse>>> findAllPosts(
+    public ResponseEntity<Response<Page<PostDefaultResponse>>> findAllPosts(
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("findMyPost 시작");
-        Page<PostFindResponse> result = postService.findAllPosts(pageable);
+        Page<PostDefaultResponse> result = postService.findAllPosts(pageable);
         log.info("findMyPost 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
-    // 내 게시물 전체 조회
+    // 로그인한 유저의 게시물들
     @GetMapping("/me")
-    public ResponseEntity<Response<Page<PostFindResponse>>> findMyPosts(
+    public ResponseEntity<Response<Page<PostFindResponse>>> findLoginUserPosts(
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal PrincipalDetails details) {
         log.info("findMyPost 시작");
-        Page<PostFindResponse> result = postService.findMyPosts(pageable, details.getUser());
+        Page<PostFindResponse> result = postService.findLoginUserPosts(pageable, details.getUser());
         log.info("findMyPost 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
-    // user id 의 게시물 전체 조회
+    // 유저의 게시물들
     @GetMapping("/users/{id}")
-    public ResponseEntity<Response<Page<PostFindResponse>>> findUserPost(
+    public ResponseEntity<Response<Page<PostFindResponse>>> findUserPosts(
+            @AuthenticationPrincipal PrincipalDetails details,
             @PathVariable Long id,
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         log.info("findMyPost 시작");
-        Page<PostFindResponse> result = postService.findUserPost(pageable, id);
+        Page<PostFindResponse> result = postService.findUserPosts(pageable, id, details.getUser().getId());
         log.info("findMyPost 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 게시물 단건 조회
     @GetMapping("/{id}")
-    public ResponseEntity<Response<PostFindResponse>> findOne(@PathVariable Long id) {
-        log.info("findOne 시작");
-        PostFindResponse result = postService.findOne(id);
-        log.info("findOne 끝");
+    public ResponseEntity<Response<PostFindResponse>> findPost(@PathVariable Long id,
+            @AuthenticationPrincipal PrincipalDetails details) {
+        log.info("findByUserId 시작");
+        PostFindResponse result = postService.findPost(id, details.getUser());
+        log.info("findByUserId 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -101,7 +105,7 @@ public class PostRestController {
             @Valid @RequestBody PostUpdateRequest request,
             @AuthenticationPrincipal PrincipalDetails details) {
         log.info("update 시작");
-        postService.update(id, request, details.getUser());
+        postService.updatePost(id, request, details.getUser());
         log.info("update 끝");
         return ResponseEntity.noContent().build();
     }
@@ -112,7 +116,7 @@ public class PostRestController {
             @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails details) {
         log.info("delete 시작");
-        postService.delete(id, details.getUser());
+        postService.deletePost(id, details.getUser());
         log.info("delete 끝");
         return ResponseEntity.noContent().build();
     }

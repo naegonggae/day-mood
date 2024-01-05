@@ -19,10 +19,10 @@ public class PostFindResponse {
     private List<TagPostDto> tagList;
     private Long userId;
     private String userNickName;
-    private boolean push; // 로그인사람이 좋아요를 눌렀나
+    private boolean isPush; // 로그인사람이 좋아요를 눌렀나
     private Long likeCount;
 
-    public PostFindResponse(Post post) {
+    public PostFindResponse(Post post, boolean isPush, Long likeCount) {
         this.id = post.getId();
         this.content = post.getContent();
         this.tagList = post.getTagPostList().stream()
@@ -30,7 +30,8 @@ public class PostFindResponse {
                 .collect(toList());
         this.userId = post.getUser().getId();
         this.userNickName = post.getUser().getNickName();
-        this.likeCount = post.getLikeCount();
+        this.isPush = isPush;
+        this.likeCount = likeCount;
     }
 
     @Getter
@@ -39,10 +40,6 @@ public class PostFindResponse {
         public TagPostDto(TagPost tagPost) {
             this.name = tagPost.getTag().getName();
         }
-    }
-
-    public void addIsPush(boolean isPush) {
-        this.push = isPush;
     }
 
 }

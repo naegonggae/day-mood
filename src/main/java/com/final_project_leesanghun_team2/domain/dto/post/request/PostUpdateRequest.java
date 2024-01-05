@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PostUpdateRequest {
 
-    @NotBlank
     @Size(min = 2, message = "글 내용은 최소 2글자 이상 작성해주세요.")
+    @NotBlank(message = "내용을 입력해 주세요.")
     private String content;
 
     private List<String> tagList;
