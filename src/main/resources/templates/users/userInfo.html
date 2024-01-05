@@ -223,10 +223,6 @@
       if (result.resultCode === 'SUCCESS') {
         console.log('팔로우 이벤트 성공:', result);
         const push = result.result.follow;
-        const followCount = result.result.followCount;
-
-        const followCountElement = document.getElementById('followCount');
-        followCountElement.innerText = followCount;
 
         const followButton = document.getElementById(`followButton-${userId}`);
         followButton.className = `btn ${push ? 'btn-secondary' : 'btn-primary'}`;
