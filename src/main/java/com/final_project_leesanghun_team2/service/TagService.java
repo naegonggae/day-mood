@@ -26,7 +26,9 @@ public class TagService {
 		log.info("tag 저장 시작");
 		log.info(request.getName());
 
-		// 태그를 조회해보고 있으면 사용, 없으면 태그 생성
+		// 1. 태그를 조회
+		// 2. 있음 -> 태그 사용
+		//    없음 -> 태그 생성
 		Tag findTag = tagRepository.findByName(request.getName())
 				.orElseGet(() -> {
 					log.info("조회했더니 없어서 생성하러 들어옴");
@@ -39,15 +41,16 @@ public class TagService {
 		return TagSaveResponse.from(findTag);
 	}
 
-	// tagName 이 저장되어 있는 태그인지 확인
-	public TagFindResponse isExistTag(String tagName) {
+	// 태그 존재 여부 확인
+	public TagFindResponse isTagExists(String tagName) {
 
+		// 태그 존재 여부
 		boolean result = tagRepository.existsByName(tagName);
 
-		// 태그가 존재하지 않으므로 검색할 수 없음
+		// 존재하지 않는 태그로 검색 할 수 없다.
 		if (!result) throw new NoSuchTagException();
 
-		// 태그가 존재하므로 true 를 반환.
+		// 태그가 존재하면 True 를 리턴한다.
 		return TagFindResponse.from(result);
 	}
 
@@ -55,9 +58,10 @@ public class TagService {
 	@Transactional
 	public void deleteTag(Long tagId) {
 
-		Tag findTag = tagRepository.findById(tagId)
-				.orElseThrow(NoSuchTagException::new);
+		// 태그
+		Tag findTag = tagRepository.findById(tagId).orElseThrow(NoSuchTagException::new);
 
+		// 태그 삭제
 		tagRepository.delete(findTag);
 	}
 

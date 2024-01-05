@@ -172,7 +172,7 @@ public class UserService {
     public List<Top5JoinUserListResponse> top5JoinUserList() {
         List<User> userList = userRepository.findTop5ByOrderByCreatedAtDesc();
         return userList.stream()
-                .map(user -> Top5JoinUserListResponse.from(user, userList.indexOf(user)))
+                .map(user -> Top5JoinUserListResponse.of(user, userList.indexOf(user)))
                 .collect(Collectors.toList());
     }
 
@@ -181,7 +181,7 @@ public class UserService {
     public List<Top5UsersHasMostPostsListResponse> top5UserHasMostPostsList() {
         List<User> userList = postRepository.findTop5UsersWithMostPosts();
         return userList.stream()
-                .map(user -> Top5UsersHasMostPostsListResponse.from(user, userList.indexOf(user)))
+                .map(user -> Top5UsersHasMostPostsListResponse.of(user, userList.indexOf(user)))
                 .collect(Collectors.toList());
     }
 
@@ -190,7 +190,7 @@ public class UserService {
     public List<Top5UserHasMostFollowingListResponse> top5UserHasMostFollowingList() {
         List<User> userList = followRepository.findTop5UsersWithMostFollowers();
         return userList.stream()
-                .map(user -> Top5UserHasMostFollowingListResponse.from(user, userList.indexOf(user)))
+                .map(user -> Top5UserHasMostFollowingListResponse.of(user, userList.indexOf(user)))
                 .collect(Collectors.toList());
     }
 

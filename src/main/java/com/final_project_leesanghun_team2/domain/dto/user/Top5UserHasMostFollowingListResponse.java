@@ -14,7 +14,7 @@ public class Top5UserHasMostFollowingListResponse {
 	private String nickName;
 	private int index;
 
-	public static Top5UserHasMostFollowingListResponse from(User user, int num) {
+	public static Top5UserHasMostFollowingListResponse of(User user, int num) {
 		return new Top5UserHasMostFollowingListResponse(user.getId(), user.getNickName(), num+1);
 	}
 

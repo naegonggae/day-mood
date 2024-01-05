@@ -14,7 +14,7 @@ public class Top5JoinUserListResponse {
 	private String nickName;
 	private int index;
 
-	public static Top5JoinUserListResponse from(User user, int num) {
+	public static Top5JoinUserListResponse of(User user, int num) {
 		return new Top5JoinUserListResponse(user.getId(), user.getNickName(), num+1);
 	}
 

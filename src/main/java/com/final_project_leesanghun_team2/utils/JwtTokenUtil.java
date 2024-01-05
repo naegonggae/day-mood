@@ -59,7 +59,7 @@ public class JwtTokenUtil {
 				principalDetails.getUser().getRole().toString());
 		log.info("accessToken 과 refreshToken 이 정상적으로 생성되었습니다.");
 
-		return TokenResponse.form(userId, accessToken, refreshToken);
+		return TokenResponse.of(userId, accessToken, refreshToken);
 	}
 
 	// 토큰 검증

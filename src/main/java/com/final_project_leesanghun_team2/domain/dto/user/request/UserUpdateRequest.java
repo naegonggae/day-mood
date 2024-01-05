@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserUpdateRequest {
 
-	@NotBlank
 	@Size(min = 2, max = 10, message = "닉네임은 최소 2글자 이상 10글자 이하로 입력해주세요.")
+	@NotBlank(message = "닉네임을 입력해 주세요.")
 	private String nickName;
 
 }

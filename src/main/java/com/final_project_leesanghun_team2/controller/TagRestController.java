@@ -34,8 +34,8 @@ public class TagRestController {
 
 	// 존재하는 태그인지 체크
 	@GetMapping
-	public ResponseEntity<Response<TagFindResponse>> isExist(@RequestParam(name = "tagName") String tagName) {
-		TagFindResponse result = tagService.isExistTag(tagName);
+	public ResponseEntity<Response<TagFindResponse>> isTagExists(@RequestParam(name = "tagName") String tagName) {
+		TagFindResponse result = tagService.isTagExists(tagName);
 		return ResponseEntity.ok().body(Response.success(result));
 	}
 

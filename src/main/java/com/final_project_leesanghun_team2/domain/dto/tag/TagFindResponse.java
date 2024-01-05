@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TagFindResponse {
 
-	private boolean isExist;
+	private boolean isTagExist;
 
-	public static TagFindResponse from(boolean isExist) {
-		return new TagFindResponse(isExist);
+	public static TagFindResponse from(boolean isTagExist) {
+		return new TagFindResponse(isTagExist);
 	}
 }

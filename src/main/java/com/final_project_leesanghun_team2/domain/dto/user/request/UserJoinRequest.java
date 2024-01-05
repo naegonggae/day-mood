@@ -12,15 +12,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserJoinRequest {
 
-    @Email(message = "이메일 형식을 맞춰 주세요")
-    @NotBlank(message = "이메일을 입력해 주세요")
+    @Email(message = "이메일 형식을 맞춰 주세요.")
+    @NotBlank(message = "이메일을 입력해 주세요.")
     private String username;
 
-    @Size(min = 5, message = "비밀번호를 최소 5글자 이상으로 입력해주세요")
-    @NotBlank
+    @Size(min = 5, message = "비밀번호를 최소 5글자 이상으로 입력해주세요.")
+    @NotBlank(message = "비밀번호를 입력해 주세요.")
     private String password;
 
-    @NotBlank
     @Size(min = 2, max = 10, message = "닉네임은 최소 2글자 이상 10글자 이하로 입력해주세요.")
+    @NotBlank(message = "닉네임을 입력해 주세요.")
     private String nickName;
 }

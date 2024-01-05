@@ -14,7 +14,7 @@ public class TokenResponse {
 	private String accessToken;
 	private String refreshToken;
 
-	public static TokenResponse form(Long id, String accessToken, String refreshToken) {
+	public static TokenResponse of(Long id, String accessToken, String refreshToken) {
 		return new TokenResponse(id, accessToken, refreshToken);
 	}
 }

@@ -14,7 +14,7 @@ public class Top5UsersHasMostPostsListResponse {
 	private String nickName;
 	private int index;
 
-	public static Top5UsersHasMostPostsListResponse from(User user, int num) {
+	public static Top5UsersHasMostPostsListResponse of(User user, int num) {
 		return new Top5UsersHasMostPostsListResponse(user.getId(), user.getNickName(), num+1);
 	}
 
