@@ -33,7 +33,7 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Comment parent;
+    private Comment parentComment;
 
     // 생성 메서드
 
@@ -55,7 +55,7 @@ public class Comment extends BaseEntity {
         this.content = request.getContent();
         this.user = user;
         this.post = post;
-        this.parent = findComment;
+        this.parentComment = findComment;
     }
 
     // 수정

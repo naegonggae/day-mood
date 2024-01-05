@@ -20,8 +20,6 @@ public class Post extends BaseEntity {
     private Long id;
     @Column(nullable = false, length = 500)
     private String content;
-    @Column(nullable = false)
-    private Long likeCount;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -36,7 +34,6 @@ public class Post extends BaseEntity {
     }
     public Post(PostSaveRequest request, User user) {
         this.content = request.getContent();
-        this.likeCount = 0L;
         this.user = user;
     }
     public void addTagPost(List<TagPost> tagPostList) {
@@ -46,21 +43,6 @@ public class Post extends BaseEntity {
     // 수정
     public void update(PostUpdateRequest request, List<TagPost> tagPostList) {
         this.content = request.getContent();
-        this.tagPostList = tagPostList; // 덮어씌워짐
-    }
-
-    // 좋아요 증가 메서드
-    public void increaseLikeCount() {
-        this.likeCount++;
-    }
-
-    // 좋아요 감소 메서드
-    public void decreaseLikeCount() {
-        this.likeCount--;
-    }
-
-    // 배치 - 실제 좋아요 개수로 갱신
-    public void updateLikeCount(Long likeCount) {
-        this.likeCount = likeCount;
+        this.tagPostList = tagPostList; // 덮어씀
     }
 }
