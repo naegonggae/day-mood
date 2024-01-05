@@ -1,11 +1,10 @@
 package com.final_project_leesanghun_team2.controller.view;
 
-import com.final_project_leesanghun_team2.domain.dto.likes.LikesCheckResponse;
+import com.final_project_leesanghun_team2.domain.dto.post.PostDefaultResponse;
 import com.final_project_leesanghun_team2.domain.dto.post.PostFindResponse;
-import com.final_project_leesanghun_team2.domain.dto.user.Top5NewUserListResponse;
-import com.final_project_leesanghun_team2.domain.dto.user.Top5FollowerUserListResponse;
-import com.final_project_leesanghun_team2.domain.dto.user.Top5LikeUserListResponse;
-import com.final_project_leesanghun_team2.service.LikesService;
+import com.final_project_leesanghun_team2.domain.dto.user.Top5JoinUserListResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.Top5UserHasMostFollowingListResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.Top5UsersHasMostPostsListResponse;
 import com.final_project_leesanghun_team2.service.PostService;
 import com.final_project_leesanghun_team2.service.UserService;
 import java.util.List;
@@ -29,23 +28,22 @@ public class PostController {
 
 	private final UserService userService;
 	private final PostService postService;
-	private final LikesService likesService;
 
-	// 기본 홈
+	// 홈
 	@GetMapping
 	public String index(
 			Model model,
 			@PageableDefault(size = 10)
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		Page<PostFindResponse> posts = postService.findAllPosts(pageable); // 전체 게시물
-		List<Top5NewUserListResponse> newUsers = userService.newUserList();
-		List<Top5LikeUserListResponse> likeUsers = userService.userLikeList();
-		List<Top5FollowerUserListResponse> followerUsers = userService.userFollowList();
+		Page<PostDefaultResponse> posts = postService.findAllPosts(pageable);
+		List<Top5JoinUserListResponse> newUsers = userService.top5JoinUserList();
+		List<Top5UsersHasMostPostsListResponse> mostPostsUsers = userService.top5UserHasMostPostsList();
+		List<Top5UserHasMostFollowingListResponse> followerUsers = userService.top5UserHasMostFollowingList();
 
 		model.addAttribute("posts", posts);
 		model.addAttribute("newUsers", newUsers);
-		model.addAttribute("likeUsers", likeUsers);
+		model.addAttribute("mostPostsUsers", mostPostsUsers);
 		model.addAttribute("followerUsers", followerUsers);
 		model.addAttribute("currentPage", pageable.getPageNumber()); // 현재 페이지 번호
 		model.addAttribute("totalPages", posts.getTotalPages()); // 전체 페이지 수
@@ -55,33 +53,25 @@ public class PostController {
 
 	// 로그인 후 홈
 	@GetMapping("/{id}")
-	public String loginIndex(
+	public String indexWhenLogin(
 			@PathVariable Long id, Model model,
 			@PageableDefault(size = 10)
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		Page<PostFindResponse> posts = postService.findAllPosts(pageable);
-
-		// post 마다 isPush 를 채워준다.
-		posts.stream()
-				.forEach(post -> {
-					LikesCheckResponse likesCheckResponse = likesService.hasUserLikedPost(post.getId(), id);
-					post.addIsPush(likesCheckResponse.isPush());
-				});
-
-		List<Top5NewUserListResponse> newUsers = userService.newUserList();
-		List<Top5LikeUserListResponse> likeUsers = userService.userLikeList();
-		List<Top5FollowerUserListResponse> followerUsers = userService.userFollowList();
+		Page<PostFindResponse> posts = postService.findAllPostsWhenLogin(pageable, id);
+		List<Top5JoinUserListResponse> newUsers = userService.top5JoinUserList();
+		List<Top5UsersHasMostPostsListResponse> mostPostsUsers = userService.top5UserHasMostPostsList();
+		List<Top5UserHasMostFollowingListResponse> followerUsers = userService.top5UserHasMostFollowingList();
 
 		model.addAttribute("posts", posts);
 		model.addAttribute("userId", id);
 		model.addAttribute("newUsers", newUsers);
-		model.addAttribute("likeUsers", likeUsers);
+		model.addAttribute("mostPostsUsers", mostPostsUsers);
 		model.addAttribute("followerUsers", followerUsers);
 		model.addAttribute("currentPage", pageable.getPageNumber()); // 현재 페이지 번호
 		model.addAttribute("totalPages", posts.getTotalPages()); // 전체 페이지 수
 
-		return "loginIndex";
+		return "indexWhenLogin";
 	}
 
 	// 게시물 생성 페이지
@@ -98,14 +88,9 @@ public class PostController {
 			@PageableDefault(size = 10)
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		Page<PostFindResponse> posts = postService.findByTag(pageable, keyword);
-
-		// post 마다 isPush 를 채워준다.
-		posts.stream()
-				.forEach(post -> {
-					LikesCheckResponse likesCheckResponse = likesService.hasUserLikedPost(post.getId(), id);
-					post.addIsPush(likesCheckResponse.isPush());
-				});
+		log.info("findByTag 시작");
+		Page<PostFindResponse> posts = postService.findPostsByTag(pageable, keyword, id);
+		log.info("findByTag 끝");
 
 		model.addAttribute("keyword", keyword); // 키워드 파람
 		model.addAttribute("posts", posts);

@@ -17,26 +17,26 @@
           <i class="fa fa-user-circle" aria-hidden="true"></i>
           <p class="nickName" th:text="${user.nickName}"></p>
           <button type="button" id="isFollow"
-                  th:class="${user.push} ? 'btn btn-secondary' : 'btn btn-primary'"
+                  th:class="${user.isFollow} ? 'btn btn-secondary' : 'btn btn-primary'"
                   th:onclick="|followUser(${user.id})|"
-                  th:text="${user.push} ? '팔로잉' : '팔로우'">
+                  th:text="${user.isFollow} ? '팔로잉' : '팔로우'">
           </button>
         </div>
         <div class="mt30">
           <div class="post-num-set">
-            <p id="postNum" th:text="${user.totalPost}"></p>
+            <p id="postNum" th:text="${user.postCount}"></p>
             <p>게시물</p>
           </div>
           <!-- // post-num-set -->
           <div data-bs-toggle="modal" data-bs-target="#followingModal" class="following-set"
                th:onclick="|loadFollowingList(${user.id})|">
-            <p id="followingNum" th:text="${user.followingNum}"></p>
+            <p id="followingNum" th:text="${user.followingCount}"></p>
             <p>팔로잉</p>
           </div>
           <!-- // following-set -->
           <div data-bs-toggle="modal" data-bs-target="#followModal" class="follow-set"
                th:onclick="|loadFollowList(${user.id})|">
-            <p id="followNum" th:text="${user.followNum}"></p>
+            <p id="followCount" th:text="${user.followCount}"></p>
             <p>팔로워</p>
           </div>
           <!-- // follow-set -->
@@ -64,7 +64,7 @@
               <li>
                 <a th:onclick="|pushLike(${post.id})|" style="cursor: pointer;">
                   <i th:id="likeButton- + ${post.id}" aria-hidden="true"
-                     th:class="${post.push} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
+                     th:class="${post.isLike} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
                   </i>️
                 </a>
               </li>
@@ -108,7 +108,7 @@
   // 팔로잉 목록 조회
   async function loadFollowingList(userId) {
     try {
-      const response = await fetch(`/api/v1/users/${userId}/follows`, {
+      const response = await fetch(`/api/v1/users/${userId}/followings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -134,10 +134,10 @@
                         </div>
                      </div>
                     <button id="followButton-${user.id}"
-                       class="${user.push ? 'btn btn-secondary' : 'btn btn-primary'}"
-                       onclick="followUser2(${user.id})"
-                       style="${user.me ? 'display: none;' : 'display: inline-block;'}">
-                       ${user.push ? '팔로잉' : '팔로우'}
+                       class="${user.follow ? 'btn btn-secondary' : 'btn btn-primary'}"
+                       onclick="followUserInModal(${user.id})"
+                       style="${user.sameUser ? 'display: none;' : 'display: inline-block;'}">
+                       ${user.follow ? '팔로잉' : '팔로우'}
                     </button>
                   </div>
           `;
@@ -160,7 +160,7 @@
   // 팔로우 목록 조회
   async function loadFollowList(userId) {
     try {
-      const response = await fetch(`/api/v1/users/${userId}/followings`, {
+      const response = await fetch(`/api/v1/users/${userId}/follows`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -186,10 +186,10 @@
                         </div>
                      </div>
                     <button id="followButton-${user.id}"
-                       class="${user.push ? 'btn btn-secondary' : 'btn btn-primary'}"
-                       onclick="followUser2(${user.id})"
-                       style="${user.me ? 'display: none;' : 'display: inline-block;'}">
-                       ${user.push ? '팔로잉' : '팔로우'}
+                       class="${user.follow ? 'btn btn-secondary' : 'btn btn-primary'}"
+                       onclick="followUserInModal(${user.id})"
+                       style="${user.sameUser ? 'display: none;' : 'display: inline-block;'}">
+                       ${user.follow ? '팔로잉' : '팔로우'}
                     </button>
                   </div>
           `;
@@ -209,7 +209,7 @@
     }
   }
 
-  async function followUser2(userId) {
+  async function followUserInModal(userId) {
     try {
       const response = await fetch(`/api/v1/users/${userId}/follows`, {
         method: 'POST',
@@ -222,7 +222,11 @@
 
       if (result.resultCode === 'SUCCESS') {
         console.log('팔로우 이벤트 성공:', result);
-        const push = result.result.push;
+        const push = result.result.follow;
+        const followCount = result.result.followCount;
+
+        const followCountElement = document.getElementById('followCount');
+        followCountElement.innerText = followCount;
 
         const followButton = document.getElementById(`followButton-${userId}`);
         followButton.className = `btn ${push ? 'btn-secondary' : 'btn-primary'}`;
@@ -255,10 +259,10 @@
 
       if (result.resultCode === 'SUCCESS') {
         console.log('팔로우 이벤트 성공:', result);
-        const push = result.result.push;
-        const followNum = result.result.followCount;
+        const push = result.result.follow;
+        const followCount = result.result.followCount;
 
-        document.getElementById('followNum').innerText = followNum;
+        document.getElementById('followCount').innerText = followCount;
 
         const isFollow = document.getElementById(`isFollow`);
         isFollow.className = `${push ? 'btn btn-secondary' : 'btn btn-primary'}`;

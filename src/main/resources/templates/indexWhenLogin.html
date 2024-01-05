@@ -68,7 +68,7 @@
               <li>
                 <a th:onclick="|pushLike(${post.id})|" style="cursor: pointer;">
                   <i th:id="likeButton- + ${post.id}" aria-hidden="true"
-                   th:class="${post.push} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
+                   th:class="${post.isLike} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
                   </i>️
                 </a>
               </li>
@@ -118,9 +118,9 @@
       <!-- // new-user-list -->
 
       <div class="new-user-list">
-        <div class="new-user-intro">좋아요 랭킹 💛</div>
+        <div class="new-user-intro">활동이 많은 유저 🔥</div>
         <div class="new-user-box">
-          <div class="new-user-info" th:each="user : ${likeUsers}">
+          <div class="new-user-info" th:each="user : ${mostPostsUsers}">
             <span th:text="${user.index}"></span>
             <i th:onclick="|goToUserInfo(${user.id})|" class="fa fa-user-circle" aria-hidden="true"></i>
             <a th:onclick="|goToUserInfo(${user.id})|" class="nickName" th:text="${user.nickName}"></a>
@@ -131,7 +131,7 @@
       <!-- // new-user-list -->
 
       <div class="new-user-list">
-        <div class="new-user-intro">팔로우 랭킹 🏅</div>
+        <div class="new-user-intro">팔로우를 많이 받은 유저 🏅</div>
         <div class="new-user-box">
           <div class="new-user-info" th:each="user : ${followerUsers}">
             <span th:text="${user.index}"></span>

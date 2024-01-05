@@ -12,8 +12,8 @@ async function pushLike(postId) {
 
     if (result.resultCode === 'SUCCESS') {
       console.log('좋아요 이벤트 성공: ' + result);
-      const likedByMe = result.result.push;
-      const likesCount = result.result.count;
+      const likedByMe = result.result.like;
+      const likesCount = result.result.likeCount;
 
       const likeIcon = document.getElementById(`likeButton-${postId}`);
       const likeCountElement = document.querySelector(`.likeCount-${postId}`);

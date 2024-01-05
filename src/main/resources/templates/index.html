@@ -138,9 +138,9 @@
         <!-- // new-user-list -->
 
         <div class="new-user-list">
-          <div class="new-user-intro">좋아요 랭킹 💛</div>
+          <div class="new-user-intro">활동이 많은 유저 🔥</div>
           <div class="new-user-box">
-            <div class="new-user-info" th:each="user : ${likeUsers}">
+            <div class="new-user-info" th:each="user : ${mostPostsUsers}">
               <span th:text="${user.index}"></span>
               <i data-bs-toggle="modal" data-bs-target="#loginModal" class="fa fa-user-circle" aria-hidden="true"></i>
               <a data-bs-toggle="modal" data-bs-target="#loginModal" class="nickName" th:text="${user.nickName}"></a>
@@ -151,7 +151,7 @@
         <!-- // new-user-list -->
 
         <div class="new-user-list">
-          <div class="new-user-intro">팔로우 랭킹 🏅</div>
+          <div class="new-user-intro">팔로우를 많이 받은 유저 🏅</div>
           <div class="new-user-box">
             <div class="new-user-info" th:each="user : ${followerUsers}">
               <span th:text="${user.index}"></span>

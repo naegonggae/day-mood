@@ -143,7 +143,7 @@ async function goToMyInfo() {
 
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
-      window.location.href = `/users/myInfo/${userId}`;
+      window.location.href = `/loginUsers/${userId}`;
     } else {
       console.log('유저 확인 실패. HTTP 상태 코드:', response.status);
       console.log('유저 확인 실패. 응답값:', result);
@@ -173,9 +173,9 @@ async function goToUserInfo(findUserId) {
     if (result.resultCode === 'SUCCESS') {
       const userId = result.result.id;
       if (findUserId === userId) {
-        window.location.href = `/users/myInfo/${findUserId}`;
+        window.location.href = `/loginUsers/${findUserId}`;
       } else {
-        window.location.href = `/userInfo/${findUserId}/loginUser/${result.result.id}`;
+        window.location.href = `/users/${findUserId}/loginUsers/${result.result.id}`;
       }
     } else {
       console.log('유저 확인 실패. HTTP 상태 코드:', response.status);

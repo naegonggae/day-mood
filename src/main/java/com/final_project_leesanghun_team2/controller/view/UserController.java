@@ -24,39 +24,40 @@ public class UserController {
 	private final UserService userService;
 	private final PostService postService;
 
-	// 유저 정보 상세 페이지
-	@GetMapping("/userInfo/{userId}/loginUser/{id}")
+	// 유저의 정보 상세 페이지
+	@GetMapping("/users/{userId}/loginUsers/{loginUserId}")
 	public String userInfo(
 			@PathVariable Long userId,
-			@PathVariable Long id, Model model,
+			@PathVariable Long loginUserId, Model model,
 			@PageableDefault(size = 10)
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-		UserFindResponse user = userService.findUser(userId, id);
+
+		UserFindResponse user = userService.findUser(userId, loginUserId);
 		log.info("findUserPost 시작");
-		Page<PostFindResponse> posts = postService.findUserPosts(pageable, userId, id);
+		Page<PostFindResponse> posts = postService.findUserPosts(pageable, userId, loginUserId);
 		log.info("findUserPost 끝");
 
 		model.addAttribute("user", user);
 		model.addAttribute("posts", posts);
+
 		return "users/userInfo";
 	}
 
-	// 나의 상세 페이지
-	@GetMapping("/users/myInfo/{userId}")
-	public String myInfo(
-			@PathVariable Long userId,
-			Model model,
+	// 로그인한 유저의 상세 페이지
+	@GetMapping("/loginUsers/{loginUserId}")
+	public String loginUserInfo(
+			@PathVariable Long loginUserId, Model model,
 			@PageableDefault(size = 10)
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		UserFindResponse user = userService.findUser(userId, userId);
+		UserFindResponse user = userService.findUser(loginUserId, loginUserId);
 		log.info("findUserPost 시작");
-		Page<PostFindResponse> posts = postService.findUserPosts(pageable, userId, userId);
+		Page<PostFindResponse> posts = postService.findUserPosts(pageable, loginUserId, loginUserId);
 		log.info("findUserPost 끝");
 
 		model.addAttribute("user", user);
 		model.addAttribute("posts", posts);
 
-		return "users/myInfo";
+		return "users/loginUserInfo";
 	}
 }
