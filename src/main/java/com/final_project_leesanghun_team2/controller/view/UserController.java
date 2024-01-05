@@ -33,7 +33,7 @@ public class UserController {
 			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
 		UserFindResponse user = userService.findUser(userId, id);
 		log.info("findUserPost 시작");
-		Page<PostFindResponse> posts = postService.findUserPost(pageable, userId, id);
+		Page<PostFindResponse> posts = postService.findUserPosts(pageable, userId, id);
 		log.info("findUserPost 끝");
 
 		model.addAttribute("user", user);
@@ -51,7 +51,7 @@ public class UserController {
 
 		UserFindResponse user = userService.findUser(userId, userId);
 		log.info("findUserPost 시작");
-		Page<PostFindResponse> posts = postService.findUserPost(pageable, userId, userId);
+		Page<PostFindResponse> posts = postService.findUserPosts(pageable, userId, userId);
 		log.info("findUserPost 끝");
 
 		model.addAttribute("user", user);

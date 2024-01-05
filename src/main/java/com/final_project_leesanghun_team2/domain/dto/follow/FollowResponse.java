@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FollowResponse {
 
-	private boolean isPush;
+	private boolean isFollow;
 	private Long followCount;
 	private Long followingCount;
 
-	public static FollowResponse from(boolean status, Long followCount, Long followingCount) {
-		return new FollowResponse(status, followCount, followingCount);
+	public static FollowResponse of(boolean isFollow, Long followCount, Long followingCount) {
+		return new FollowResponse(isFollow, followCount, followingCount);
 	}
 }

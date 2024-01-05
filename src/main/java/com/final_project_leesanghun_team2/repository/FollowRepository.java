@@ -12,10 +12,10 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
 
 	boolean existsByFollowUserAndFollowingUser(User followUser, User followingUser);
 	void deleteByFollowUserAndFollowingUser(User followUser, User followingUser);
-	Long countByFollowingUser(User loginUser); // 로그인한 유저의 팔로잉 개수
-	Long countByFollowUser(User loginUser); // 로그인한 유저의 팔로워 개수
+	Long countByFollowingUser(User user); // 유저의 팔로잉 개수
+	Long countByFollowUser(User user); // 유저의 팔로우 개수
 	Page<Follow> findAllByFollowingUser(User user, Pageable pageable); // 유저의 팔로잉 목록
-	Page<Follow> findAllByFollowUser(User user, Pageable pageable); // 유저의 팔로워 목록
+	Page<Follow> findAllByFollowUser(User user, Pageable pageable); // 유저의 팔로우 목록
 	@Query("SELECT f.followUser " +
 			"FROM Follow f " +
 			"GROUP BY f.followUser " +

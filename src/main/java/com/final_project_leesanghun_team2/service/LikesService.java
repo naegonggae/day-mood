@@ -34,14 +34,12 @@ public class LikesService {
 
         // 좋아요 있음 -> 좋아요 삭제
         if (isLike) {
-            // 좋아요 삭제
             likesRepository.deleteByUserAndPost(user, post);
             return LikesPushResponse.of(false, likeCount-1);
         }
 
         // 좋아요 없음 -> 좋아요 생성
         else {
-            // 좋아요 생성
             Likes likes = Likes.createLikes(user, post);
             likesRepository.save(likes);
             return LikesPushResponse.of(true, likeCount+1);

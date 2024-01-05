@@ -26,6 +26,7 @@ public class FollowRestController {
 
 	private final FollowService followService;
 
+	// 팔로우 이벤트
 	@PostMapping("/{userId}/follows")
 	public ResponseEntity<Response<FollowResponse>> follow(@PathVariable Long userId,
 			@AuthenticationPrincipal PrincipalDetails details) {
@@ -33,21 +34,23 @@ public class FollowRestController {
 		return ResponseEntity.ok().body(Response.success(result));
 	}
 
-	@GetMapping("/{userId}/followings")
-	public ResponseEntity<Response<Page<FollowPeopleResponse>>> findFollowingPeople(@PathVariable Long userId,
-			@AuthenticationPrincipal PrincipalDetails details,
-			@PageableDefault(size = 10)
-			@SortDefault(sort = "createdAt",direction = Direction.DESC) Pageable pageable) {
-		Page<FollowPeopleResponse> result = followService.findFollowingPeople(userId, pageable, details.getUser());
-		return ResponseEntity.ok().body(Response.success(result));
-	}
-
+	// 유저의 팔로우 목록
 	@GetMapping("/{userId}/follows")
 	public ResponseEntity<Response<Page<FollowPeopleResponse>>> findFollowPeople(@PathVariable Long userId,
 			@AuthenticationPrincipal PrincipalDetails details,
 			@PageableDefault(size = 10)
 			@SortDefault(sort = "createdAt",direction = Direction.DESC) Pageable pageable) {
 		Page<FollowPeopleResponse> result = followService.findFollowPeople(userId, pageable, details.getUser());
+		return ResponseEntity.ok().body(Response.success(result));
+	}
+
+	// 유저의 팔로잉 목록
+	@GetMapping("/{userId}/followings")
+	public ResponseEntity<Response<Page<FollowPeopleResponse>>> findFollowingPeople(@PathVariable Long userId,
+			@AuthenticationPrincipal PrincipalDetails details,
+			@PageableDefault(size = 10)
+			@SortDefault(sort = "createdAt",direction = Direction.DESC) Pageable pageable) {
+		Page<FollowPeopleResponse> result = followService.findFollowingPeople(userId, pageable, details.getUser());
 		return ResponseEntity.ok().body(Response.success(result));
 	}
 
