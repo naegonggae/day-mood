@@ -46,7 +46,6 @@ public class BatchConfig {
 		// 갱신 로직
 		return post -> {
 			Long likeCount = likesRepository.countByPost(post);
-			post.updateLikeCount(likeCount);
 			return post;
 		};
 	}
