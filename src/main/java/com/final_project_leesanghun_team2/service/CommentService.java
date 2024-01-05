@@ -15,7 +15,6 @@ import com.final_project_leesanghun_team2.exception.post.NoSuchPostException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
 import com.final_project_leesanghun_team2.repository.CommentRepository;
 import com.final_project_leesanghun_team2.repository.PostRepository;
-import com.final_project_leesanghun_team2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
 
@@ -37,8 +35,8 @@ public class CommentService {
     @Transactional
     public CommentSaveResponse saveComment(Long id, CommentSaveRequest request, User user) {
 
-        Post findPost = postRepository.findById(id)
-                .orElseThrow(NoSuchPostException::new);
+        // 게시물
+        Post findPost = postRepository.findById(id).orElseThrow(NoSuchPostException::new);
 
         // 댓글 생성
         Comment comment = Comment.createComment(request, findPost, user);
@@ -51,13 +49,13 @@ public class CommentService {
     @Transactional
     public ReplySaveResponse saveReply(Long parentId, Long postId, ReplySaveRequest request, User user) {
 
-        Post findPost = postRepository.findById(postId)
-                .orElseThrow(NoSuchPostException::new);
+        // 게시물
+        Post findPost = postRepository.findById(postId).orElseThrow(NoSuchPostException::new);
 
-        Comment findComment = commentRepository.findById(parentId)
-                .orElseThrow(NoSuchCommentException::new);
+        // Parents 댓글
+        Comment findComment = commentRepository.findById(parentId).orElseThrow(NoSuchCommentException::new);
 
-        // 댓글 생성
+        // 답글 생성
         Comment reply = Comment.createReply(request, findPost, findComment, user);
         Comment savedReply = commentRepository.save(reply);
 
@@ -67,21 +65,23 @@ public class CommentService {
     // 댓글 전체 조회
     public Page<CommentFindResponse> findAllComments(Long id, Pageable pageable) {
 
-        Post findPost = postRepository.findById(id)
-                .orElseThrow(NoSuchPostException::new);
+        // 게시물
+        Post findPost = postRepository.findById(id).orElseThrow(NoSuchPostException::new);
 
+        // Parents 댓글이 null 인 게시물의 댓글들
         return commentRepository.findAllByPostAndParentNull(findPost, pageable).map(CommentFindResponse::from);
     }
 
-    // 대댓글 전체 조회
+    // 답글 전체 조회
     public Page<ReplyFindResponse> findAllReplies(Long parentId, Long postId, Pageable pageable) {
 
-        Post findPost = postRepository.findById(postId)
-                .orElseThrow(NoSuchPostException::new);
+        // 게시물
+        Post findPost = postRepository.findById(postId).orElseThrow(NoSuchPostException::new);
 
-        Comment findComment = commentRepository.findById(parentId)
-                .orElseThrow(NoSuchCommentException::new);
+        // Parents 댓글
+        Comment findComment = commentRepository.findById(parentId).orElseThrow(NoSuchCommentException::new);
 
+        // Parents 댓글의 답글들
         return commentRepository.findAllByPostAndParent(findPost, findComment, pageable).map(ReplyFindResponse::from);
     }
 
@@ -89,11 +89,11 @@ public class CommentService {
     @Transactional
     public void updateComment(Long postId, Long cmtId, CommentUpdateRequest request, User user) {
 
-        Post findPost = postRepository.findById(postId)
-                .orElseThrow(NoSuchPostException::new);
+        // 게시물
+        Post findPost = postRepository.findById(postId).orElseThrow(NoSuchPostException::new);
 
-        Comment findComment = commentRepository.findById(cmtId)
-                .orElseThrow(NoSuchCommentException::new);
+        // 댓글
+        Comment findComment = commentRepository.findById(cmtId).orElseThrow(NoSuchCommentException::new);
 
         // Comment User == login User 일 때 수정
         checkPermission(user, findComment);
@@ -105,13 +105,11 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long postId, Long cmtId, User user) {
 
-        // 해당 postId의 포스트 유무 체크
-        Post findPost = postRepository.findById(postId)
-                .orElseThrow(NoSuchPostException::new);
+        // 게시물
+        Post findPost = postRepository.findById(postId).orElseThrow(NoSuchPostException::new);
 
-        // 해당 id의 댓글 유무 체크
-        Comment findComment = commentRepository.findById(cmtId)
-                .orElseThrow(NoSuchCommentException::new);
+        // 댓글
+        Comment findComment = commentRepository.findById(cmtId).orElseThrow(NoSuchCommentException::new);
 
         // Comment User == login User 일 때 삭제
         checkPermission(user, findComment);
@@ -119,7 +117,7 @@ public class CommentService {
         commentRepository.delete(findComment);
     }
 
-    private static void checkPermission(User user, Comment findComment) {
+    private void checkPermission(User user, Comment findComment) {
         if (!Objects.equals(findComment.getUser().getId(), user.getId())) {
             throw new PermissionDeniedException();
         }
