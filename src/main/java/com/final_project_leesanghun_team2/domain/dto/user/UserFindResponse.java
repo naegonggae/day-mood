@@ -14,18 +14,10 @@ public class UserFindResponse {
 	private String nickName;
 	private Long followNum;
 	private Long followingNum;
-	private boolean push;
+	private boolean isFollow;
 	private Long totalPost;
 
-	public UserFindResponse(User user, Long totalPost) {
-		this.id = user.getId();
-		this.nickName = user.getNickName();
-		this.followNum = user.getFollowNum();
-		this.followingNum = user.getFollowingNum();
-		this.totalPost = totalPost;
-	}
-
-	public void addIsPush(boolean push) {
-		this.push = push;
+	public static UserFindResponse of(User user, Long followNum, Long followingNum, boolean isFollow, Long totalPost) {
+		return new UserFindResponse(user.getId(), user.getNickName(), followNum, followingNum, isFollow, totalPost);
 	}
 }

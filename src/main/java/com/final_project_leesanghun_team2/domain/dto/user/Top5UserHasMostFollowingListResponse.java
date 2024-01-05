@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Top5NewUserListResponse {
+public class Top5UserHasMostFollowingListResponse {
 
 	private Long id;
 	private String nickName;
 	private int index;
 
-	public static Top5NewUserListResponse from(User user, int num) {
-		return new Top5NewUserListResponse(user.getId(), user.getNickName(), num+1);
+	public static Top5UserHasMostFollowingListResponse from(User user, int num) {
+		return new Top5UserHasMostFollowingListResponse(user.getId(), user.getNickName(), num+1);
 	}
 
 }

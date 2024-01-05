@@ -70,48 +70,49 @@ public class UserRestController {
 
     // 회원이름으로 검색
     @GetMapping("/nickname")
-    public ResponseEntity<Response<UserFindResponse>> findNickName(@RequestParam(name = "nickName") String nickName) {
+    public ResponseEntity<Response<UserFindResponse>> findUserByNickName(@RequestParam(name = "nickName") String nickName,
+            @AuthenticationPrincipal PrincipalDetails details) {
         log.info("findUsername 시작");
-        UserFindResponse result = userService.findNickName(nickName);
+        UserFindResponse result = userService.findUserByNickName(nickName, details.getUser());
         log.info("findUsername 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 회원 단건 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Response<UserFindResponse>> findOne(@PathVariable Long id) {
-        log.info("findOne 시작");
-        UserFindResponse result = userService.findOne(id);
-        log.info("findOne 끝");
+    @GetMapping("/{userId}/login/{loginId}")
+    public ResponseEntity<Response<UserFindResponse>> findUser(@PathVariable Long userId, @PathVariable Long loginId) {
+        log.info("findByUserId 시작");
+        UserFindResponse result = userService.findUser(userId, loginId);
+        log.info("findByUserId 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 내 정보 조회
     @GetMapping("/me")
-    public ResponseEntity<Response<UserFindResponse>> findMe(@AuthenticationPrincipal PrincipalDetails details) {
-        log.info("findOne 시작");
-        UserFindResponse result = userService.findMe(details.getUser());
-        log.info("findOne 끝");
+    public ResponseEntity<Response<UserFindResponse>> findLoginUser(@AuthenticationPrincipal PrincipalDetails details) {
+        log.info("findByUserId 시작");
+        UserFindResponse result = userService.findLoginUser(details.getUser());
+        log.info("findByUserId 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 회원 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<Response<UserUpdateResponse>> update(@PathVariable Long id,
+    public ResponseEntity<Response<UserUpdateResponse>> updateUser(@PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest request,
             @AuthenticationPrincipal PrincipalDetails details) {
         log.info("update 시작");
-        UserUpdateResponse result = userService.update(id, request, details.getUser());
+        UserUpdateResponse result = userService.updateUser(id, request, details.getUser());
         log.info("update 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 회원 정보 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id,
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails details) {
         log.info("delete 시작");
-        userService.delete(id, details.getUser());
+        userService.deleteUser(id, details.getUser());
         log.info("delete 끝");
         return ResponseEntity.noContent().build();
     }

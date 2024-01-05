@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public enum CacheType {
 
-	TOP5_JOIN_USER_LIST("top5UserByCreatedAtDesc"),
-	TOP5_MOST_POST_USER_LIST("top5UsersWithMostPosts"),
-	TOP5_MOST_FOLLOWER_USER_LIST("top5UsersWithMostFollowers"),
+	TOP5_JOIN_USER_LIST("top5JoinUserList"),
+	TOP5_USER_HAS_MOST_POSTS_LIST("top5UserHasMostPostsList"),
+	TOP5_USER_HAS_MOST_FOLLOWING_LIST("top5UserHasMostFollowingList"),
 	MY_POSTS("myPosts"),
 	USER_POSTS("userPosts"),
 	TAG_POSTS("tagPosts")

@@ -1,16 +1,13 @@
 package com.final_project_leesanghun_team2.service;
 
-import com.final_project_leesanghun_team2.domain.dto.user.Top5NewUserListResponse;
-import com.final_project_leesanghun_team2.domain.dto.user.Top5FollowerUserListResponse;
-import com.final_project_leesanghun_team2.domain.dto.user.Top5LikeUserListResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.Top5JoinUserListResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.Top5UserHasMostFollowingListResponse;
+import com.final_project_leesanghun_team2.domain.dto.user.Top5UsersHasMostPostsListResponse;
 import com.final_project_leesanghun_team2.domain.dto.user.UserUpdateResponse;
 import com.final_project_leesanghun_team2.exception.user.DuplicateNickNameException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
-import com.final_project_leesanghun_team2.repository.CommentRepository;
 import com.final_project_leesanghun_team2.repository.FollowRepository;
-import com.final_project_leesanghun_team2.repository.LikesRepository;
 import com.final_project_leesanghun_team2.repository.PostRepository;
-import com.final_project_leesanghun_team2.repository.TagPostRepository;
 import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
 import com.final_project_leesanghun_team2.utils.JwtTokenUtil;
 import com.final_project_leesanghun_team2.domain.dto.user.TokenResponse;
@@ -30,8 +27,9 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -41,20 +39,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor @Slf4j
+@RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     @Qualifier("refreshTokenRedisTemplate")
     private final RedisTemplate<String, String> refreshTokenRedisTemplate;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final FollowRepository followRepository;
-    private final LikesRepository likesRepository;
-    private final TagPostRepository tagPostRepository;
     private final BCryptPasswordEncoder encoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenUtil jwtTokenUtil;
+    private final CacheEvictService cacheEvictService;
 
     // 회원가입
     @Transactional
@@ -64,7 +61,7 @@ public class UserService {
         checkDuplicateUsername(request);
 
         // 닉네임 중복 체크
-        checkDuplicationNickname(request);
+        checkDuplicationNickname(request.getNickName());
 
         // 비밀번호 암호화
         String encodedPassword = encoder.encode(request.getPassword());
@@ -72,6 +69,9 @@ public class UserService {
         // User 생성
         User user = User.createUser(request, encodedPassword);
         User savedUser = userRepository.save(user);
+
+        // 회원이 새로 가입하면 새로 조인한 top5 유저 캐시 삭제
+        cacheEvictService.evictTop5JoinUserList();
 
         return UserJoinResponse.from(savedUser);
     }
@@ -88,100 +88,136 @@ public class UserService {
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
 
-        // 저장되어있던 PrincipalDetails 정보 가져오기
+        // 저장되어있던 PrincipalDetails 정보 추출
         PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
 
-        // 엑세스 토큰 생성
+        // 토큰 생성
         TokenResponse tokenResponse = jwtTokenUtil.createToken(principalDetails);
+        log.info("토큰 생성 완료");
 
-        log.info("토큰 생성까지 완료");
-        // 레디스에 리프레쉬 토큰 저장
+        // Redis 에 RefreshToke 저장
         refreshTokenRedisTemplate.opsForValue()
                 .set(authentication.getName(),
                 tokenResponse.getRefreshToken(), jwtTokenUtil.REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS); // REFRESH_TOKEN_EXPIRE_TIME 동안 저장 후 삭제
+        log.info("{}의 RefreshToke 이 Redis 에 저장되었습니다.", request.getUsername());
 
-        log.info("레디스에 저장했다!");
         return tokenResponse;
     }
 
     // 회원단건 조회
-    public UserFindResponse findOne(Long id) {
+    public UserFindResponse findUser(Long userId, Long loginUserId) {
 
-        User findUser = userRepository.findById(id)
+        // 조회하려는 유저
+        User findUser = userRepository.findById(userId)
                 .orElseThrow(NoSuchUserException::new);
 
-        // 유저의 총 게시물 개수 조회
-        Long totalPost = postRepository.countAllByUser(findUser);
+        // 로그인한 유저
+        User loginUser = userRepository.findById(loginUserId)
+                .orElseThrow(NoSuchUserException::new);
+        
+        // 조회하려는 유저의 팔로우, 팔로잉 개수
+        Long followCount = followRepository.countByFollowUser(findUser);
+        Long followingCount = followRepository.countByFollowingUser(findUser);
 
-        return new UserFindResponse(findUser, totalPost);
+        // 로그인한 유저가 조회하려는 유저를 팔로우하는지 여부
+        boolean isFollow = followRepository.existsByFollowUserAndFollowingUser(findUser, loginUser);
+
+        // 조회하려는 유저의 총 게시물 개수
+        Long postCount = postRepository.countAllByUser(findUser);
+        
+        return UserFindResponse.of(findUser, followCount, followingCount, isFollow, postCount);
     }
-
+    
     // 내정보 조회
-    public UserFindResponse findMe(User user) {
+    public UserFindResponse findLoginUser(User user) {
 
-        User findUser = userRepository.findById(user.getId())
+        // 로그인한 유저
+        User loginUser = userRepository.findById(user.getId())
                 .orElseThrow(NoSuchUserException::new);
 
-        // 유저의 총 게시물 개수 조회
-        Long totalPost = postRepository.countAllByUser(findUser);
+        // 로그인한 유저의 팔로우, 팔로잉 개수
+        Long followCount = followRepository.countByFollowUser(loginUser);
+        Long followingCount = followRepository.countByFollowingUser(loginUser);
 
-        return new UserFindResponse(findUser, totalPost);
+        // 로그인한 유저의 총 게시물 개수
+        Long postCount = postRepository.countAllByUser(loginUser);
+
+        return UserFindResponse.of(loginUser, followCount, followingCount, false, postCount);
     }
 
     // NickName 으로 회원검색
-    public UserFindResponse findNickName(String NickName) {
+    public UserFindResponse findUserByNickName(String NickName, User user) {
 
-        // 해당 닉네임을 가진 회원 검색
+        // 해당 닉네임을 사용하는 유저
         User findUser = userRepository.findByNickName(NickName).orElseThrow(NoSuchUserException::new);
 
-        // 유저의 총 게시물 개수 조회
-        Long totalPost = postRepository.countAllByUser(findUser);
+        // 로그인한 유저
+        User loginUser = userRepository.findById(user.getId()).orElseThrow(NoSuchUserException::new);
 
-        return new UserFindResponse(findUser, totalPost);
+        // 유저의 팔로우, 팔로잉 개수
+        Long followCount = followRepository.countByFollowUser(findUser);
+        Long followingCount = followRepository.countByFollowingUser(findUser);
+
+        // 로그인한 유저가 해당 닉네임을 사용하는 유저를 팔로우하는지 여부
+        boolean isFollow = followRepository.existsByFollowUserAndFollowingUser(findUser, loginUser);
+
+        // 유저의 총 게시물 개수
+        Long postCount = postRepository.countAllByUser(findUser);
+
+        return UserFindResponse.of(findUser, followCount, followingCount, isFollow, postCount);
     }
 
-    // 새로 조인한 유저 5명 조회
-    public List<Top5NewUserListResponse> newUserList() {
+    // 새로 조인한 유저 top5 조회
+    @Cacheable(cacheNames = "top5JoinUserList")
+    public List<Top5JoinUserListResponse> top5JoinUserList() {
         List<User> userList = userRepository.findTop5ByOrderByCreatedAtDesc();
         return userList.stream()
-                .map(user -> Top5NewUserListResponse.from(user, userList.indexOf(user)))
+                .map(user -> Top5JoinUserListResponse.from(user, userList.indexOf(user)))
                 .collect(Collectors.toList());
     }
 
-    // 좋아요를 가장 많이 받은 유저 5명 조회
-    public List<Top5LikeUserListResponse> userLikeList() {
-        List<User> userList = userRepository.findTop5ByOrderByTotalLikeDesc();
+    // 활동이 가장 많은 유저 5명 조회
+    @Cacheable(cacheNames = "top5UserHasMostPostsList")
+    public List<Top5UsersHasMostPostsListResponse> top5UserHasMostPostsList() {
+        List<User> userList = postRepository.findTop5UsersWithMostPosts();
         return userList.stream()
-                .map(user -> Top5LikeUserListResponse.from(user, userList.indexOf(user)))
+                .map(user -> Top5UsersHasMostPostsListResponse.from(user, userList.indexOf(user)))
                 .collect(Collectors.toList());
     }
 
     // 팔로우를 가장 많이 받은 유저 5명 조회
-    public List<Top5FollowerUserListResponse> userFollowList() {
-        List<User> userList = userRepository.findTop5ByOrderByFollowingNumDesc();
+    @Cacheable(cacheNames = "top5UserHasMostFollowingList")
+    public List<Top5UserHasMostFollowingListResponse> top5UserHasMostFollowingList() {
+        List<User> userList = followRepository.findTop5UsersWithMostFollowers();
         return userList.stream()
-                .map(user -> Top5FollowerUserListResponse.from(user, userList.indexOf(user)))
+                .map(user -> Top5UserHasMostFollowingListResponse.from(user, userList.indexOf(user)))
                 .collect(Collectors.toList());
+    }
+
+    // 랭킹 캐시 삭제 & 갱신 스케줄링
+    @Scheduled(cron = "0 0 * * * *") // 매 시간 0분 0초에 스케줄링
+    public void scheduleTop5UserListEvictAndCache() {
+        // top5UserHasMostPostsList 캐시 삭제 후 갱신
+        cacheEvictService.evictTop5UserHasMostPostsList();
+        top5UserHasMostPostsList();
+
+        // top5UserHasMostFollowingList 캐시 삭제 후 갱신
+        cacheEvictService.evictTop5UserHasMostFollowingList();
+        top5UserHasMostFollowingList();
     }
 
     // 회원정보 수정
     @Transactional
-    public UserUpdateResponse update(Long id, UserUpdateRequest request, User user) {
+    public UserUpdateResponse updateUser(Long id, UserUpdateRequest request, User user) {
 
         // 변경한 닉네임이 중복되는 닉네임인지 확인
-        String updateNickName = request.getNickName();
-
-        boolean findNickName = userRepository.existsByNickName(updateNickName);
-        if (findNickName) throw new DuplicateNickNameException();
+        checkDuplicationNickname(request.getNickName());
 
         // 로그인한 유저로 바로 수정할 수 없음. -> 영속성에 가져와야 변경감지를 통해 수정하기 때문
-        User findUser = userRepository.findById(id)
-                .orElseThrow(NoSuchUserException::new);
+        User findUser = userRepository.findById(id).orElseThrow(NoSuchUserException::new);
 
         // 조회한 유저와 로그인한 유저가 같을 때 수정을 할 수 있다.
-        log.debug(String.valueOf(findUser.getId()));
-        log.debug(String.valueOf(user.getId()));
-        if (!Objects.equals(findUser.getUsername(), user.getUsername())) throw new PermissionDeniedException();
+        hasPermission(user, findUser);
 
         findUser.update(request.getNickName());
         return UserUpdateResponse.from(findUser);
@@ -189,27 +225,29 @@ public class UserService {
 
     // 회원 삭제
     @Transactional
-    public void delete(Long id, User user) {
+    public void deleteUser(Long id, User user) {
 
-        User findUser = userRepository.findById(id)
-                .orElseThrow(NoSuchUserException::new);
+        // 로그인한 유저를 영속성에 가져옴
+        User findUser = userRepository.findById(id).orElseThrow(NoSuchUserException::new);
 
         // 조회한 유저와 로그인한 유저가 같을 때 삭제를 할 수 있다.
-        if (!Objects.equals(findUser.getUsername(), user.getUsername())) throw new PermissionDeniedException();
+        hasPermission(user, findUser);
 
         // 태그포스트 게시물, 댓글, 팔로우, 좋아요 지우고 user 삭제한다.
-
-
         userRepository.delete(findUser);
     }
 
-    private void checkDuplicationNickname(UserJoinRequest request) {
-        boolean findNickName = userRepository.existsByNickName(request.getNickName());
+    private void checkDuplicationNickname(String nickName) {
+        boolean findNickName = userRepository.existsByNickName(nickName);
         if (findNickName) throw new DuplicateNickNameException();
     }
 
     private void checkDuplicateUsername(UserJoinRequest request) {
         boolean findUsername = userRepository.existsByUsername(request.getUsername());
         if (findUsername) throw new DuplicateUsernameException();
+    }
+
+    private void hasPermission(User user, User findUser) {
+        if (!Objects.equals(findUser.getUsername(), user.getUsername())) throw new PermissionDeniedException();
     }
 }
