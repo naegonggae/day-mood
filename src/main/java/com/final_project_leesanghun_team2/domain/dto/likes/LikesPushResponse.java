@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LikesPushResponse {
 
-	private boolean isPush;
-	private Long count;
+	private boolean isLike;
+	private Long likeCount;
 
-	public static LikesPushResponse from(boolean status, Long count) {
-		return new LikesPushResponse(status, count);
+	public static LikesPushResponse of(boolean isLike, Long likeCount) {
+		return new LikesPushResponse(isLike, likeCount);
 	}
 }

@@ -16,7 +16,7 @@ public class LikesRestController {
 
     private final LikesService likesService;
 
-    // 좋아요 누르기
+    // 좋아요 이벤트
     @PostMapping("/{postId}/likes")
     public ResponseEntity<Response<LikesPushResponse>> pushLike(@PathVariable Long postId,
             @AuthenticationPrincipal PrincipalDetails details) {

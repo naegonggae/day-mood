@@ -12,12 +12,12 @@ public class UserFindResponse {
 
 	private Long id;
 	private String nickName;
-	private Long followNum;
-	private Long followingNum;
+	private Long followCount;
+	private Long followingCount;
 	private boolean isFollow;
-	private Long totalPost;
+	private Long postCount;
 
-	public static UserFindResponse of(User user, Long followNum, Long followingNum, boolean isFollow, Long totalPost) {
-		return new UserFindResponse(user.getId(), user.getNickName(), followNum, followingNum, isFollow, totalPost);
+	public static UserFindResponse of(User user, Long followCount, Long followingCount, boolean isFollow, Long postCount) {
+		return new UserFindResponse(user.getId(), user.getNickName(), followCount, followingCount, isFollow, postCount);
 	}
 }

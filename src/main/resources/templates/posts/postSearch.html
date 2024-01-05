@@ -37,7 +37,7 @@
               <li>
                 <a th:onclick="|pushLike(${post.id})|" style="cursor: pointer;">
                   <i th:id="likeButton- + ${post.id}" aria-hidden="true"
-                     th:class="${post.push} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
+                     th:class="${post.isLike} ? 'fa fa-heart text-danger' : 'fa fa-heart-o'">
                   </i>️
                 </a>
               </li>
