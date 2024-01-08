@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.final_project_leesanghun_team2.domain.dto.post.request.PostSaveRequest;
 import com.final_project_leesanghun_team2.domain.dto.post.request.PostUpdateRequest;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.*;
 
 import javax.persistence.*;
@@ -23,10 +25,18 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-
     @JsonIgnore
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TagPost> tagPostList = new ArrayList<>();
+    @JsonIgnore
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Likes> likeList = new HashSet<>();
+
+    // 연관관계 메서드
+    public void removePost(Likes like) {
+        this.likeList.remove(like);
+    }
+
 
     // 생성 메서드
     public static Post createPost(PostSaveRequest request, User user) {
