@@ -23,14 +23,14 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 			FilterChain filterChain) throws ServletException, IOException {
-		logger.error("JwtExceptionFilter 시작");
+		logger.info("JwtExceptionFilter 시작");
 		try {
 			filterChain.doFilter(request, response);
 		} catch (RuntimeException exception) {
 			logger.error("예외 캐치 : "+ exception.getClass().getSimpleName());
 			setErrorResponse(request, response, exception);
 		}
-		logger.error("JwtExceptionFilter 끝");
+		logger.info("JwtExceptionFilter 끝");
 	}
 
 	private void setErrorResponse(HttpServletRequest req, HttpServletResponse res,
