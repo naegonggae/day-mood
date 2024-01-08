@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.stereotype.Controller;
@@ -56,7 +57,7 @@ public class PostController {
 	public String indexWhenLogin(
 			@PathVariable Long id, Model model,
 			@PageableDefault(size = 10)
-			@SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+			@SortDefault(sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
 
 		Page<PostFindResponse> posts = postService.findAllPostsWhenLogin(pageable, id);
 		List<Top5JoinUserListResponse> newUsers = userService.top5JoinUserList();

@@ -14,7 +14,7 @@ import com.final_project_leesanghun_team2.exception.comment.NoSuchCommentExcepti
 import com.final_project_leesanghun_team2.exception.post.NoSuchPostException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
 import com.final_project_leesanghun_team2.repository.CommentRepository;
-import com.final_project_leesanghun_team2.repository.PostRepository;
+import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

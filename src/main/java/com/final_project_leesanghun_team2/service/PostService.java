@@ -14,7 +14,7 @@ import com.final_project_leesanghun_team2.exception.tag.NoSuchTagException;
 import com.final_project_leesanghun_team2.exception.user.NoSuchUserException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
 import com.final_project_leesanghun_team2.repository.LikesRepository;
-import com.final_project_leesanghun_team2.repository.PostRepository;
+import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import com.final_project_leesanghun_team2.repository.TagRepository;
 import com.final_project_leesanghun_team2.repository.UserRepository;
 import java.util.List;
@@ -115,10 +115,20 @@ public class PostService {
 //                    return new PostFindResponse(post, isLike, likeCount);
 //                });
 
-        Page<PostFindResponse> allPosts = postRepository.findAll(pageable)
+//        Page<PostFindResponse> allPosts = postRepository.findAll(pageable)
+//                .map(post -> {
+//                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
+//                    Long likeCount = likesRepository.countByPost(post);
+//                    return new PostFindResponse(post, isLike, likeCount);
+//                });
+        Page<PostFindResponse> allPosts = postRepository.findAllPost(pageable)
                 .map(post -> {
-                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
-                    Long likeCount = likesRepository.countByPost(post);
+//                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
+                    boolean isLike = post.getLikeList().stream()
+                            .anyMatch(like -> like.getUser().equals(findUser));
+                    Long likeCount = Long.valueOf(post.getLikeList().size());
+//                    Long likeCount = likesRepository.countByPost(post);
+                    log.info(likeCount.toString());
                     return new PostFindResponse(post, isLike, likeCount);
                 });
 

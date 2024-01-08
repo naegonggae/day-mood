@@ -4,7 +4,7 @@ import com.final_project_leesanghun_team2.domain.entity.Post;
 import com.final_project_leesanghun_team2.domain.entity.Tag;
 import com.final_project_leesanghun_team2.domain.entity.TagPost;
 import com.final_project_leesanghun_team2.domain.entity.User;
-import com.final_project_leesanghun_team2.repository.PostRepository;
+import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import com.final_project_leesanghun_team2.repository.TagPostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

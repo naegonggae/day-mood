@@ -7,7 +7,7 @@ import com.final_project_leesanghun_team2.domain.dto.user.UserUpdateResponse;
 import com.final_project_leesanghun_team2.exception.user.DuplicateNickNameException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
 import com.final_project_leesanghun_team2.repository.FollowRepository;
-import com.final_project_leesanghun_team2.repository.PostRepository;
+import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
 import com.final_project_leesanghun_team2.utils.JwtTokenUtil;
 import com.final_project_leesanghun_team2.domain.dto.user.TokenResponse;
