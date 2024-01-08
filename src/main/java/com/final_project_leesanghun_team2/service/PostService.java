@@ -123,11 +123,11 @@ public class PostService {
 //                });
         Page<PostFindResponse> allPosts = postRepository.findAllPost(pageable)
                 .map(post -> {
-                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
-//                    boolean isLike = post.getLikeList().stream()
-//                            .anyMatch(like -> like.getUser().equals(findUser));
-//                    Long likeCount = Long.valueOf(post.getLikeList().size());
-                    Long likeCount = likesRepository.countByPost(post);
+//                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
+                    boolean isLike = post.getLikeList().stream()
+                            .anyMatch(like -> like.getUser().getId().equals(findUser.getId()));
+                    Long likeCount = Long.valueOf(post.getLikeList().size());
+//                    Long likeCount = likesRepository.countByPost(post);
 //                    log.info(likeCount.toString());
                     return new PostFindResponse(post, isLike, likeCount);
                 });
