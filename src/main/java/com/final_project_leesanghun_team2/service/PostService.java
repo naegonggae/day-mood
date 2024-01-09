@@ -111,11 +111,11 @@ public class PostService {
 //                    return new PostFindResponse(post, isLike, likeCount);
 //                });
 
-//        Page<PostFindResponse> allPosts = postRepository.findAll(pageable)
-//                .map(post -> new PostFindResponse(post, findUser));
-
-        Page<PostFindResponse> allPosts = postRepository.findAllPost(pageable)
+        Page<PostFindResponse> allPosts = postRepository.findAll(pageable)
                 .map(post -> new PostFindResponse(post, findUser));
+//
+//        Page<PostFindResponse> allPosts = postRepository.findAllPost(pageable)
+//                .map(post -> new PostFindResponse(post, findUser));
 
 
         return allPosts;
