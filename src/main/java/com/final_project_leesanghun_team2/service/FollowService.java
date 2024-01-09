@@ -6,7 +6,7 @@ import com.final_project_leesanghun_team2.domain.entity.Follow;
 import com.final_project_leesanghun_team2.domain.entity.User;
 import com.final_project_leesanghun_team2.exception.follow.SelfFollowException;
 import com.final_project_leesanghun_team2.exception.user.NoSuchUserException;
-import com.final_project_leesanghun_team2.repository.FollowRepository;
+import com.final_project_leesanghun_team2.repository.follow.FollowRepository;
 import com.final_project_leesanghun_team2.repository.UserRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;

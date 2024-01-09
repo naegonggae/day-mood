@@ -90,11 +90,8 @@ public class PostService {
 
     // 게시물 전체 조회
     public Page<PostDefaultResponse> findAllPosts(Pageable pageable) {
-        return postRepository.findAll(pageable)
-                .map(post -> {
-                    Long likeCount = likesRepository.countByPost(post);
-                    return new PostDefaultResponse(post, likeCount);
-                });
+        return postRepository.findAllDefaultPost(pageable)
+                .map(post -> new PostDefaultResponse(post));
     }
 
     // 로그인 이후 게시물 전체 조회
@@ -103,22 +100,8 @@ public class PostService {
         // 로그인 유저
         User findUser = userRepository.findById(userId).orElseThrow(NoSuchUserException::new);
 
-        // 로그인 유저가 팔로우한 유저들의 게시물들
-//        Page<PostFindResponse> posts = postRepository.findPostsByFollowers(userId, pageable)
-//                .map(post -> {
-//                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
-//                    Long likeCount = likesRepository.countByPost(post);
-//                    return new PostFindResponse(post, isLike, likeCount);
-//                });
-
-        Page<PostFindResponse> allPosts = postRepository.findAll(pageable)
+        return postRepository.findAllPost(pageable)
                 .map(post -> new PostFindResponse(post, findUser));
-//
-//        Page<PostFindResponse> allPosts = postRepository.findAllPost(pageable)
-//                .map(post -> new PostFindResponse(post, findUser));
-
-
-        return allPosts;
     }
 
     // 로그인한 유저의 게시물들
@@ -156,12 +139,6 @@ public class PostService {
 
         // 게시물
         Post findPost = postRepository.findById(id).orElseThrow(NoSuchPostException::new);
-
-        // 로그인한 유저가 게시물에 좋아요를 눌렀는지 여부
-        boolean isLike = likesRepository.existsByUserAndPost(loginUser, findPost);
-
-        // 게시물의 좋아요 개수
-        Long likeCount = likesRepository.countByPost(findPost);
 
         return new PostFindResponse(findPost, loginUser);
     }

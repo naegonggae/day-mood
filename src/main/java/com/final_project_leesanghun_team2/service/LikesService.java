@@ -29,13 +29,13 @@ public class LikesService {
         Post post = postRepository.findById(postId).orElseThrow(NoSuchPostException::new);
 
         // 게시물의 좋아요 개수
-//        Long likeCount = likesRepository.countByPost(post);
-        long likeCount = post.getLikeList().size();
+        Long likeCount = likesRepository.countByPost(post);
+//        long likeCount = post.getLikeList().size();
 
         // 로그인한 유저가 좋아요를 누른지 여부
-//        boolean isLike = likesRepository.existsByUserAndPost(user, post);
-        boolean isLike = post.getLikeList().stream()
-                .anyMatch(like -> like.getUser().getId().equals(user.getId()));
+        boolean isLike = likesRepository.existsByUserAndPost(user, post);
+//        boolean isLike = post.getLikeList().stream()
+//                .anyMatch(like -> like.getUser().getId().equals(user.getId()));
 
         // 좋아요 있음 -> 좋아요 삭제
         if (isLike) {

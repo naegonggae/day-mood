@@ -13,7 +13,7 @@ import com.final_project_leesanghun_team2.domain.dto.comment.ReplyFindResponse;
 import com.final_project_leesanghun_team2.exception.comment.NoSuchCommentException;
 import com.final_project_leesanghun_team2.exception.post.NoSuchPostException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
-import com.final_project_leesanghun_team2.repository.CommentRepository;
+import com.final_project_leesanghun_team2.repository.comment.CommentRepository;
 import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -69,7 +69,7 @@ public class CommentService {
         Post findPost = postRepository.findById(id).orElseThrow(NoSuchPostException::new);
 
         // Parents 댓글이 null 인 게시물의 댓글들
-        return commentRepository.findAllByPostAndParentNull(findPost, pageable).map(CommentFindResponse::from);
+        return commentRepository.findAllByPostAndParentIsNull(findPost, pageable).map(CommentFindResponse::from);
     }
 
     // 답글 전체 조회
@@ -82,7 +82,7 @@ public class CommentService {
         Comment findComment = commentRepository.findById(parentId).orElseThrow(NoSuchCommentException::new);
 
         // Parents 댓글의 답글들
-        return commentRepository.findAllByPostAndParent(findPost, findComment, pageable).map(ReplyFindResponse::from);
+        return commentRepository.findAllByPostAndParentComment(findPost, findComment, pageable).map(ReplyFindResponse::from);
     }
 
     // 댓글 수정

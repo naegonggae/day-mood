@@ -19,9 +19,9 @@ public class PostDefaultResponse {
 	private List<TagPostDto> tagList;
 	private Long userId;
 	private String userNickName;
-	private Long likeCount;
+	private int likeCount;
 
-	public PostDefaultResponse(Post post, Long likeCount) {
+	public PostDefaultResponse(Post post) {
 		this.id = post.getId();
 		this.content = post.getContent();
 		this.tagList = post.getTagPostList().stream()
@@ -29,7 +29,7 @@ public class PostDefaultResponse {
 				.collect(toList());
 		this.userId = post.getUser().getId();
 		this.userNickName = post.getUser().getNickName();
-		this.likeCount = likeCount;
+		this.likeCount = post.getLikeList().size();
 	}
 
 	@Getter

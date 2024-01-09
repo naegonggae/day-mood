@@ -33,13 +33,9 @@ public class CommentFindResponse {
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(updatedAt, now);
 
-        log.info(String.valueOf(duration));
         long days = duration.toDays();
         long hours = duration.toHours() % 24;
         long minutes = duration.toMinutes() % 60;
-        log.info(String.valueOf(days));
-        log.info(String.valueOf(hours));
-        log.info(String.valueOf(minutes));
 
         if (days > 0) {
             return days + "일 전";

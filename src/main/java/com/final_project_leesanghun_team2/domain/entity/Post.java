@@ -37,7 +37,6 @@ public class Post extends BaseEntity {
         this.likeList.remove(like);
     }
 
-
     // 생성 메서드
     public static Post createPost(PostSaveRequest request, User user) {
         return new Post(request, user);
