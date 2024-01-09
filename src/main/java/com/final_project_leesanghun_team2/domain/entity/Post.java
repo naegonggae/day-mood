@@ -29,7 +29,7 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TagPost> tagPostList = new ArrayList<>();
     @JsonIgnore
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post")
     private Set<Likes> likeList = new HashSet<>();
 
     // 연관관계 메서드

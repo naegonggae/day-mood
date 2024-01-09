@@ -81,11 +81,7 @@ public class PostService {
 
         // tagPost 마다 게시물의 좋아요 개수, 로그인한 유저가 좋아요 눌렀는지 여부 추가
         List<PostFindResponse> postFindResponses = tagPostList.stream()
-                .map(tagPost -> {
-                    boolean isLike = likesRepository.existsByUserAndPost(findUser, tagPost.getPost());
-                    Long likeCount = likesRepository.countByPost(tagPost.getPost());
-                    return new PostFindResponse(tagPost.getPost(), isLike, likeCount);
-                })
+                .map(tagPost -> new PostFindResponse(tagPost.getPost(), findUser))
                 .collect(Collectors.toList());
 
         // List -> Page
@@ -116,21 +112,11 @@ public class PostService {
 //                });
 
 //        Page<PostFindResponse> allPosts = postRepository.findAll(pageable)
-//                .map(post -> {
-//                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
-//                    Long likeCount = likesRepository.countByPost(post);
-//                    return new PostFindResponse(post, isLike, likeCount);
-//                });
+//                .map(post -> new PostFindResponse(post, findUser));
+
         Page<PostFindResponse> allPosts = postRepository.findAllPost(pageable)
-                .map(post -> {
-//                    boolean isLike = likesRepository.existsByUserAndPost(findUser, post);
-                    boolean isLike = post.getLikeList().stream()
-                            .anyMatch(like -> like.getUser().getId().equals(findUser.getId()));
-                    Long likeCount = Long.valueOf(post.getLikeList().size());
-//                    Long likeCount = likesRepository.countByPost(post);
-//                    log.info(likeCount.toString());
-                    return new PostFindResponse(post, isLike, likeCount);
-                });
+                .map(post -> new PostFindResponse(post, findUser));
+
 
         return allPosts;
     }
@@ -142,11 +128,7 @@ public class PostService {
         Page<Post> posts = cacheMethodService.getMyPosts(pageable, user);
 
         // 자기자신의 게시물에 좋아요를 눌렀는지 여부, 게시물의 좋아요 개수 추가
-        return posts.map(post -> {
-                    boolean isLike = likesRepository.existsByUserAndPost(user, post);
-                    Long likeCount = likesRepository.countByPost(post);
-                    return new PostFindResponse(post, isLike, likeCount);
-                });
+        return posts.map(post -> new PostFindResponse(post, user));
     }
 
     // 유저의 게시물들
@@ -162,11 +144,8 @@ public class PostService {
         Page<Post> posts = cacheMethodService.getUserPosts(pageable, findUser);
 
         // 로그인한 유저가 유저의 게시물에 좋아요를 눌렀는지 여부, 게시물의 좋아요 개수 추가
-        return posts.map(post -> {
-                    boolean isLike = likesRepository.existsByUserAndPost(loginUser, post);
-                    Long likeCount = likesRepository.countByPost(post);
-                    return new PostFindResponse(post, isLike, likeCount);
-                });
+        return posts.map(post -> new PostFindResponse(post, loginUser));
+
     }
 
     // 게시물 단건 조회
@@ -184,7 +163,7 @@ public class PostService {
         // 게시물의 좋아요 개수
         Long likeCount = likesRepository.countByPost(findPost);
 
-        return new PostFindResponse(findPost, isLike, likeCount);
+        return new PostFindResponse(findPost, loginUser);
     }
 
     // 개시물 수정
