@@ -74,10 +74,8 @@ public class PostService {
         // 로그인한 유저
         User findUser = userRepository.findById(userId).orElseThrow(NoSuchUserException::new);
 
-        log.info("getTagPosts 캐싱 시작");
         // 태그가 사용된 게시물들 : 캐싱데이터
         List<TagPost> tagPostList = cacheMethodService.getTagPosts(findTag);
-        log.info("getTagPosts 캐싱 종료");
 
         // tagPost 마다 게시물의 좋아요 개수, 로그인한 유저가 좋아요 눌렀는지 여부 추가
         List<PostFindResponse> postFindResponses = tagPostList.stream()
