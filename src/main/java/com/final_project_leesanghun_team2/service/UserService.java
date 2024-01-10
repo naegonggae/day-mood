@@ -168,7 +168,7 @@ public class UserService {
     }
 
     // 새로 조인한 유저 top5 조회
-//    @Cacheable(cacheNames = "top5JoinUserList")
+    @Cacheable(cacheNames = "top5JoinUserList")
     public List<Top5JoinUserListResponse> top5JoinUserList() {
         List<User> userList = userRepository.findTop5ByOrderByCreatedAtDesc();
         return userList.stream()
@@ -177,7 +177,7 @@ public class UserService {
     }
 
     // 활동이 가장 많은 유저 5명 조회
-//    @Cacheable(cacheNames = "top5UserHasMostPostsList")
+    @Cacheable(cacheNames = "top5UserHasMostPostsList")
     public List<Top5UsersHasMostPostsListResponse> top5UserHasMostPostsList() {
         List<User> userList = postRepository.findTop5UsersWithMostPosts();
         return userList.stream()
@@ -186,7 +186,7 @@ public class UserService {
     }
 
     // 팔로우를 가장 많이 받은 유저 5명 조회
-//    @Cacheable(cacheNames = "top5UserHasMostFollowingList")
+    @Cacheable(cacheNames = "top5UserHasMostFollowingList")
     public List<Top5UserHasMostFollowingListResponse> top5UserHasMostFollowingList() {
         List<User> userList = followRepository.findTop5UsersWithMostFollowers();
         return userList.stream()
@@ -195,16 +195,16 @@ public class UserService {
     }
 
     // 랭킹 캐시 삭제 & 갱신 스케줄링
-//    @Scheduled(cron = "0 0 * * * *") // 매 시간 0분 0초에 스케줄링
-//    public void scheduleTop5UserListEvictAndCache() {
-//        // top5UserHasMostPostsList 캐시 삭제 후 갱신
-//        cacheEvictService.evictTop5UserHasMostPostsList();
-//        top5UserHasMostPostsList();
-//
-//        // top5UserHasMostFollowingList 캐시 삭제 후 갱신
-//        cacheEvictService.evictTop5UserHasMostFollowingList();
-//        top5UserHasMostFollowingList();
-//    }
+    @Scheduled(cron = "0 0 * * * *") // 매 시간 0분 0초에 스케줄링
+    public void scheduleTop5UserListEvictAndCache() {
+        // top5UserHasMostPostsList 캐시 삭제 후 갱신
+        cacheEvictService.evictTop5UserHasMostPostsList();
+        top5UserHasMostPostsList();
+
+        // top5UserHasMostFollowingList 캐시 삭제 후 갱신
+        cacheEvictService.evictTop5UserHasMostFollowingList();
+        top5UserHasMostFollowingList();
+    }
 
     // 회원정보 수정
     @Transactional
