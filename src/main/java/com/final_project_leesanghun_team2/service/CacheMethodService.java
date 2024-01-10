@@ -32,7 +32,7 @@ public class CacheMethodService {
 		return postRepository.findAllByUser(user, pageable);
 	}
 
-//	@Cacheable(cacheNames = "userPosts", key = "#user.id")
+	@Cacheable(cacheNames = "userPosts", key = "#user.id")
 	public Page<Post> getUserPosts(Pageable pageable, User user) {
 		return postRepository.findAllByUser(user, pageable);
 	}
