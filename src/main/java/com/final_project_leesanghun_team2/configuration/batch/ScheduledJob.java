@@ -19,7 +19,7 @@ public class ScheduledJob {
 	private final JobLauncher jobLauncher;
 	private final BatchConfig batchConfig;
 
-	@Scheduled(cron = "0 * * * * ?") // 매일 새벽 4시에 실행
+	@Scheduled(cron = "0 0 4 * * *") // 매일 새벽 4시에 실행
 	public void runCleanupJob() {
 		try {
 			JobParameters jobParameters = new JobParametersBuilder()
