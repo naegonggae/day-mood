@@ -39,7 +39,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -234,6 +233,9 @@ public class UserService {
         // 조회한 유저와 로그인한 유저가 같을 때 수정을 할 수 있다.
         hasPermission(user, findUser);
 
+        // 회원이 새로 가입하면 새로 조인한 top5 유저 캐시 삭제
+        cacheEvictService.evictTop5JoinUserList();
+
         findUser.update(request.getNickName());
         return UserUpdateResponse.from(findUser);
     }
@@ -247,6 +249,9 @@ public class UserService {
 
         // 조회한 유저와 로그인한 유저가 같을 때 삭제를 할 수 있다.
         hasPermission(user, findUser);
+
+        // 회원이 새로 가입하면 새로 조인한 top5 유저 캐시 삭제
+        cacheEvictService.evictTop5JoinUserList();
 
         // user 의 post, tagPost, likes, comment, follow 논리적 삭제
         Pageable pageable = PageRequest.of(0, 10);
