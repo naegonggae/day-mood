@@ -1,8 +1,18 @@
 package com.final_project_leesanghun_team2.configuration.batch;
 
-import com.final_project_leesanghun_team2.domain.entity.Post;
-import com.final_project_leesanghun_team2.repository.LikesRepository;
-import javax.persistence.EntityManagerFactory;
+import com.final_project_leesanghun_team2.configuration.batch.itemReader.CleanupJdbcCommentItemReader;
+import com.final_project_leesanghun_team2.configuration.batch.itemReader.CleanupJdbcFollowItemReader;
+import com.final_project_leesanghun_team2.configuration.batch.itemReader.CleanupJdbcLikesItemReader;
+import com.final_project_leesanghun_team2.configuration.batch.itemReader.CleanupJdbcPostItemReader;
+import com.final_project_leesanghun_team2.configuration.batch.itemReader.CleanupJdbcTagPostPostItemReader;
+import com.final_project_leesanghun_team2.configuration.batch.itemReader.CleanupJdbcUserItemReader;
+import com.final_project_leesanghun_team2.configuration.batch.itemWriter.CleanupJdbcCommentItemWriter;
+import com.final_project_leesanghun_team2.configuration.batch.itemWriter.CleanupJdbcFollowItemWriter;
+import com.final_project_leesanghun_team2.configuration.batch.itemWriter.CleanupJdbcLikesItemWriter;
+import com.final_project_leesanghun_team2.configuration.batch.itemWriter.CleanupJdbcPostItemWriter;
+import com.final_project_leesanghun_team2.configuration.batch.itemWriter.CleanupJdbcTagPostItemWriter;
+import com.final_project_leesanghun_team2.configuration.batch.itemWriter.CleanupJdbcUserItemWriter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -11,11 +21,6 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.JpaItemWriter;
-import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,55 +32,93 @@ public class BatchConfig {
 
 	private final JobBuilderFactory jobBuilderFactory;
 	private final StepBuilderFactory stepBuilderFactory;
-	private final EntityManagerFactory entityManagerFactory;
-	private final LikesRepository likesRepository;
+
+	// listener
+	private final JobListener jobListener;
+	private final StepListener stepListener;
+
+	// reader
+	private final CleanupJdbcUserItemReader cleanupJdbcUserItemReader;
+	private final CleanupJdbcPostItemReader cleanupJdbcPostItemReader;
+	private final CleanupJdbcTagPostPostItemReader cleanupJdbcTagPostPostItemReader;
+	private final CleanupJdbcCommentItemReader cleanupJdbcCommentItemReader;
+	private final CleanupJdbcFollowItemReader cleanupJdbcFollowItemReader;
+	private final CleanupJdbcLikesItemReader cleanupJdbcLikesItemReader;
+
+	// writer
+	private final CleanupJdbcUserItemWriter cleanupJdbcUserItemWriter;
+	private final CleanupJdbcPostItemWriter cleanupJdbcPostItemWriter;
+	private final CleanupJdbcTagPostItemWriter cleanupJdbcTagPostItemWriter;
+	private final CleanupJdbcCommentItemWriter cleanupJdbcCommentItemWriter;
+	private final CleanupJdbcFollowItemWriter cleanupJdbcFollowItemWriter;
+	private final CleanupJdbcLikesItemWriter cleanupJdbcLikesItemWriter;
 
 	@Bean
-	public ItemReader<Post> postItemReader() {
-		// 게시물 조회 로직
-		JpaPagingItemReader<Post> reader = new JpaPagingItemReader<>();
-		reader.setEntityManagerFactory(entityManagerFactory);
-		reader.setQueryString("SELECT p FROM Post p");
-		reader.setPageSize(100);
-
-		return reader;
+	public Step userCleanupStep() {
+		return stepBuilderFactory.get("userCleanupStep")
+				.<List<Long>, List<Long>>chunk(100)
+				.reader(cleanupJdbcUserItemReader)
+				.writer(cleanupJdbcUserItemWriter)
+				.listener(stepListener)
+				.build();
 	}
-
 	@Bean
-	public ItemProcessor<Post, Post> postItemProcessor() {
-		// 갱신 로직
-		return post -> {
-			Long likeCount = likesRepository.countByPost(post);
-			return post;
-		};
+	public Step postCleanupStep() {
+		return stepBuilderFactory.get("postCleanupStep")
+				.<List<Long>, List<Long>>chunk(100)
+				.reader(cleanupJdbcPostItemReader)
+				.writer(cleanupJdbcPostItemWriter)
+				.listener(stepListener)
+				.build();
 	}
-
 	@Bean
-	public ItemWriter<Post> postItemWriter() {
-
-		// 게시물 업데이트 로직
-		JpaItemWriter<Post> writer = new JpaItemWriter<>();
-		writer.setEntityManagerFactory(entityManagerFactory);
-
-		return writer;
+	public Step tagPostCleanupStep() {
+		return stepBuilderFactory.get("tagPostCleanupStep")
+				.<List<Long>, List<Long>>chunk(100)
+				.reader(cleanupJdbcTagPostPostItemReader)
+				.writer(cleanupJdbcTagPostItemWriter)
+				.listener(stepListener)
+				.build();
 	}
-
 	@Bean
-	public Step updateLikeCountStep() {
-		return stepBuilderFactory.get("updateLikeCountStep")
-				.<Post, Post>chunk(100)
-				.reader(postItemReader())
-				.processor(postItemProcessor())
-				.writer(postItemWriter())
+	public Step commentCleanupStep() {
+		return stepBuilderFactory.get("commentCleanupStep")
+				.<List<Long>, List<Long>>chunk(100)
+				.reader(cleanupJdbcCommentItemReader)
+				.writer(cleanupJdbcCommentItemWriter)
+				.listener(stepListener)
+				.build();
+	}
+	@Bean
+	public Step followCleanupStep() {
+		return stepBuilderFactory.get("followCleanupStep")
+				.<List<Long>, List<Long>>chunk(100)
+				.reader(cleanupJdbcFollowItemReader)
+				.writer(cleanupJdbcFollowItemWriter)
+				.listener(stepListener)
+				.build();
+	}
+	@Bean
+	public Step likesCleanupStep() {
+		return stepBuilderFactory.get("likesCleanupStep")
+				.<List<Long>, List<Long>>chunk(100)
+				.reader(cleanupJdbcLikesItemReader)
+				.writer(cleanupJdbcLikesItemWriter)
+				.listener(stepListener)
 				.build();
 	}
 
 	@Bean
-	public Job updateLikeCountJob() {
-		return jobBuilderFactory.get("updateLikeCountJob")
+	public Job cleanupJob() {
+		return jobBuilderFactory.get("cleanupJob")
 				.incrementer(new RunIdIncrementer())
-				.flow(updateLikeCountStep())
-				.end()
+				.listener(jobListener)
+				.start(tagPostCleanupStep())
+				.next(commentCleanupStep())
+				.next(likesCleanupStep())
+				.next(postCleanupStep())
+				.next(followCleanupStep())
+				.next(userCleanupStep())
 				.build();
 	}
 }

@@ -14,20 +14,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @EnableScheduling
 @Slf4j
-public class JobService {
+public class ScheduledJob {
 
 	private final JobLauncher jobLauncher;
 	private final BatchConfig batchConfig;
 
-
-	@Scheduled(cron = "0 0 4 * * *") // 매일 새벽 4시에 실행
-	public void executeBatchJob() {
+	@Scheduled(cron = "0 * * * * ?") // 매일 새벽 4시에 실행
+	public void runCleanupJob() {
 		try {
-			log.info("executeBatchJob 정상 실행");
 			JobParameters jobParameters = new JobParametersBuilder()
 					.addLong("time", System.currentTimeMillis())
 					.toJobParameters();
-			jobLauncher.run(batchConfig.updateLikeCountJob(), jobParameters);
+			jobLauncher.run(batchConfig.cleanupJob(), jobParameters);
 		} catch (JobExecutionException e) {
 			log.error("executeBatchJob 실행 중 오류 발생: {}", e.getMessage(), e);
 		}
