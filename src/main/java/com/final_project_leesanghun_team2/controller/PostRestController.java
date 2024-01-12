@@ -34,9 +34,7 @@ public class PostRestController {
     public ResponseEntity<Response<PostSaveResponse>> savePost(
             @Valid @RequestBody PostSaveRequest request,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("save 시작");
         PostSaveResponse result = postService.savePost(request, details.getUser());
-        log.info("save 끝");
         return ResponseEntity.created(URI.create("/api/v1/posts/"+result.getId()))
                 .body(Response.success(result));
     }
@@ -57,9 +55,7 @@ public class PostRestController {
     public ResponseEntity<Response<Page<PostDefaultResponse>>> findAllPosts(
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        log.info("findMyPost 시작");
         Page<PostDefaultResponse> result = postService.findAllPosts(pageable);
-        log.info("findMyPost 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -69,9 +65,7 @@ public class PostRestController {
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("findMyPost 시작");
         Page<PostFindResponse> result = postService.findLoginUserPosts(pageable, details.getUser());
-        log.info("findMyPost 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -82,9 +76,7 @@ public class PostRestController {
             @PathVariable Long id,
             @PageableDefault(size = 10)
             @SortDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        log.info("findMyPost 시작");
         Page<PostFindResponse> result = postService.findUserPosts(pageable, id, details.getUser().getId());
-        log.info("findMyPost 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -92,9 +84,7 @@ public class PostRestController {
     @GetMapping("/{id}")
     public ResponseEntity<Response<PostFindResponse>> findPost(@PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("findByUserId 시작");
         PostFindResponse result = postService.findPost(id, details.getUser());
-        log.info("findByUserId 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -104,9 +94,7 @@ public class PostRestController {
             @PathVariable Long id,
             @Valid @RequestBody PostUpdateRequest request,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("update 시작");
         postService.updatePost(id, request, details.getUser());
-        log.info("update 끝");
         return ResponseEntity.noContent().build();
     }
 
@@ -115,9 +103,7 @@ public class PostRestController {
     public ResponseEntity<Void> deletePost(
             @PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("delete 시작");
         postService.deletePost(id, details.getUser());
-        log.info("delete 끝");
         return ResponseEntity.noContent().build();
     }
 

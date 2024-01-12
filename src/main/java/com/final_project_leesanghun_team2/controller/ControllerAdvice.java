@@ -6,6 +6,7 @@ import com.final_project_leesanghun_team2.exception.DayMoodException;
 import com.final_project_leesanghun_team2.domain.ErrorResponse;
 import io.jsonwebtoken.JwtException;
 import javax.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
+@Slf4j
 public class ControllerAdvice {
 
 	private final HttpStatus BR = HttpStatus.BAD_REQUEST;
@@ -25,7 +27,8 @@ public class ControllerAdvice {
 	private final HttpStatus UA = HttpStatus.UNAUTHORIZED;
 
 	@ExceptionHandler(DayMoodException.class)
-	public ResponseEntity<Response> dreamTracksExceptionHandler(DayMoodException exception) {
+	public ResponseEntity<Response> dayMoodExceptionHandler(DayMoodException exception) {
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(exception.getStatus())
 				.body(Response.error(ErrorResponse.from(exception)));
 	}
@@ -44,36 +47,42 @@ public class ControllerAdvice {
 			builder.append(fieldError.getRejectedValue());
 			builder.append("]");
 		}
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(BR)
 				.body(Response.error(new ErrorResponse(exception.getClass().getSimpleName(), builder.toString())));
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
 	public ResponseEntity<Response> invalidParamHandler(ConstraintViolationException exception) {
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(BR)
 				.body(Response.error(new ErrorResponse(exception.getClass().getSimpleName(), exception.getMessage())));
 	}
 
 	@ExceptionHandler({InvalidFormatException.class, HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
 	public ResponseEntity<Response> invalidFormatHandler(Exception exception) {
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(BR)
 				.body(Response.error(new ErrorResponse(exception.getClass().getSimpleName(), exception.getMessage())));
 	}
 
 	@ExceptionHandler(DataAccessException.class)
 	public ResponseEntity<Response> invalidDataAccessHandler(DataAccessException exception) {
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(ISE)
 				.body(Response.error(new ErrorResponse(exception.getClass().getSimpleName(), exception.getMessage())));
 	}
 
 	@ExceptionHandler(JwtException.class)
 	public ResponseEntity<Response> jwtExceptionHandler(JwtException exception) {
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(UA)
 				.body(Response.error(new ErrorResponse(exception.getClass().getSimpleName(), exception.getMessage())));
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Response> unhandledExceptionHandler(Exception exception) {
+		log.error("에러 발생 {} : {}", exception.getClass().getSimpleName(), exception.getMessage());
 		return ResponseEntity.status(ISE)
 				.body(Response.error(new ErrorResponse(exception.getClass().getSimpleName(), exception.getMessage())));
 	}

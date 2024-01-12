@@ -10,7 +10,6 @@ import com.final_project_leesanghun_team2.repository.follow.FollowRepository;
 import com.final_project_leesanghun_team2.repository.UserRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Slf4j
 public class FollowService {
 
 	private final FollowRepository followRepository;

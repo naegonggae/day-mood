@@ -39,9 +39,8 @@ public class UserRestController {
     // 회원가입
     @PostMapping("/join")
     public ResponseEntity<Response<UserJoinResponse>> join(@Valid @RequestBody UserJoinRequest request) {
-        log.debug("join 시작");
         UserJoinResponse result = userService.join(request);
-        log.info("join 끝");
+        log.info("유저 {}이 가입했습니다.", result.getId());
         return ResponseEntity.created(URI.create("/api/v1/users/join"+result.getId()))
                 .body(Response.success(result));
     }
@@ -50,7 +49,6 @@ public class UserRestController {
     @PostMapping("/login")
     public ResponseEntity<Response<UserLoginResponse>> login(@Valid @RequestBody UserLoginRequest request,
             HttpServletResponse response) {
-        log.info("login 시작");
         TokenResponse result = userService.login(request);
 
         // 쿠키 설정
@@ -64,7 +62,7 @@ public class UserRestController {
         // access Token 은 body 로 전송 - postMan 토큰 전달 목적
         response.addHeader("Authorization", "Bearer " + result.getAccessToken());
 
-        log.info("사용자 {} 가 로그인함", result.getId());
+        log.info("유저 {}이 로그인했습니다.", result.getId());
         return ResponseEntity.ok().body(Response.success(UserLoginResponse.from(result.getId())));
     }
 
@@ -72,27 +70,21 @@ public class UserRestController {
     @GetMapping("/nickname")
     public ResponseEntity<Response<UserFindResponse>> findUserByNickName(@RequestParam(name = "nickName") String nickName,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("findUsername 시작");
         UserFindResponse result = userService.findUserByNickName(nickName, details.getUser());
-        log.info("findUsername 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 회원 단건 조회
     @GetMapping("/{userId}/login/{loginId}")
     public ResponseEntity<Response<UserFindResponse>> findUser(@PathVariable Long userId, @PathVariable Long loginId) {
-        log.info("findByUserId 시작");
         UserFindResponse result = userService.findUser(userId, loginId);
-        log.info("findByUserId 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
     // 내 정보 조회
     @GetMapping("/me")
     public ResponseEntity<Response<UserFindResponse>> findLoginUser(@AuthenticationPrincipal PrincipalDetails details) {
-        log.info("findByUserId 시작");
         UserFindResponse result = userService.findLoginUser(details.getUser());
-        log.info("findByUserId 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -101,9 +93,7 @@ public class UserRestController {
     public ResponseEntity<Response<UserUpdateResponse>> updateUser(@PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest request,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("update 시작");
         UserUpdateResponse result = userService.updateUser(id, request, details.getUser());
-        log.info("update 끝");
         return ResponseEntity.ok().body(Response.success(result));
     }
 
@@ -111,9 +101,7 @@ public class UserRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id,
             @AuthenticationPrincipal PrincipalDetails details) {
-        log.info("delete 시작");
         userService.deleteUser(id, details.getUser());
-        log.info("delete 끝");
         return ResponseEntity.noContent().build();
     }
 }

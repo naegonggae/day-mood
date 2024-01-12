@@ -98,7 +98,6 @@ public class UserService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword());
 
         // 실제 인증 - DaoAuthenticationProvider class 내 additionalAuthenticationChecks() 메소드로 비밀번호 체크
-        log.info("login - authenticationManagerBuilder 로 실제 인증을 시작합니다.");
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
 
@@ -107,13 +106,11 @@ public class UserService {
 
         // 토큰 생성
         TokenResponse tokenResponse = jwtTokenUtil.createToken(principalDetails);
-        log.info("토큰 생성 완료");
 
         // Redis 에 RefreshToke 저장
         refreshTokenRedisTemplate.opsForValue()
                 .set(authentication.getName(),
                 tokenResponse.getRefreshToken(), jwtTokenUtil.REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS); // REFRESH_TOKEN_EXPIRE_TIME 동안 저장 후 삭제
-        log.info("{}의 RefreshToke 이 Redis 에 저장되었습니다.", request.getUsername());
 
         return tokenResponse;
     }
@@ -270,6 +267,8 @@ public class UserService {
 
         // 논리적 삭제
         findUser.softDelete();
+        log.info("user-id : {}를 삭제했습니다.", findUser.getId());
+
     }
 
     private void checkDuplicationNickname(String nickName) {

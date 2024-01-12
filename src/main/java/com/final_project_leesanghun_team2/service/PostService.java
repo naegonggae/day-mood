@@ -192,6 +192,7 @@ public class PostService {
 
         // post 는 논리적 삭제
         post.softDelete();
+        log.info("post-id : {}를 삭제했습니다.", post.getId());
     }
 
     private void checkPermission(User user, Post post) {

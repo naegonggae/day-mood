@@ -63,14 +63,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 		// 서명 검증
 		AuthorizationDto authorizationDto = jwtTokenUtil.validateToken(jwtToken);
-		log.info("validateToken 통과, {}의 토큰 서명이 정상입니다.", authorizationDto.getUsername());
 
 		String username = authorizationDto.getUsername();
 		String newAccessToken = authorizationDto.getAccessToken();
 
 		// 새로운 토큰을 받았다면 쿠키에 등록하기
 		if (newAccessToken != null) {
-			log.info("새로 갱신한 accessToken 을 쿠키에 등록합니다.");
 			Cookie cookie = new Cookie("accessToken", authorizationDto.getAccessToken());
 			cookie.setPath("/");
 //        cookie.setSecure(true); // https 연결
@@ -83,7 +81,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 		if (username != null) {
 			User userEntity = userRepository.findByUsername(username)
 					.orElseThrow(NoSuchUserException::new);
-			log.info("{}님이 존재합니다.", username);
 
 			// jwt 토큰 서명을 통해서 서명이 정상이면 authentication 객체가 만들어준다.
 			PrincipalDetails principalDetails = new PrincipalDetails(userEntity);
