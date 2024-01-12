@@ -4,11 +4,13 @@ import com.final_project_leesanghun_team2.domain.dto.user.request.UserJoinReques
 import lombok.*;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "deleted_at is NULL")
 //@Table(name = "users")
 public class User extends BaseEntity {
 

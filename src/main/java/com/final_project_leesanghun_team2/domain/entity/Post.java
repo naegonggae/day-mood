@@ -10,11 +10,13 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "deleted_at is NULL")
 public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

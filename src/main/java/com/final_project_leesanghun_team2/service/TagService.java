@@ -61,8 +61,8 @@ public class TagService {
 		// 태그
 		Tag findTag = tagRepository.findById(tagId).orElseThrow(NoSuchTagException::new);
 
-		// 태그 삭제
-		tagRepository.delete(findTag);
+		// 논리적 삭제
+		findTag.softDelete();
 	}
 
 }

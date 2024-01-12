@@ -11,11 +11,13 @@ import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "deleted_at is NULL")
 public class TagPost extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)

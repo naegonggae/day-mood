@@ -4,8 +4,16 @@ import com.final_project_leesanghun_team2.domain.dto.user.Top5JoinUserListRespon
 import com.final_project_leesanghun_team2.domain.dto.user.Top5UserHasMostFollowingListResponse;
 import com.final_project_leesanghun_team2.domain.dto.user.Top5UsersHasMostPostsListResponse;
 import com.final_project_leesanghun_team2.domain.dto.user.UserUpdateResponse;
+import com.final_project_leesanghun_team2.domain.entity.Comment;
+import com.final_project_leesanghun_team2.domain.entity.Follow;
+import com.final_project_leesanghun_team2.domain.entity.Likes;
+import com.final_project_leesanghun_team2.domain.entity.Post;
+import com.final_project_leesanghun_team2.domain.entity.TagPost;
 import com.final_project_leesanghun_team2.exception.user.DuplicateNickNameException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
+import com.final_project_leesanghun_team2.repository.LikesRepository;
+import com.final_project_leesanghun_team2.repository.TagPostRepository;
+import com.final_project_leesanghun_team2.repository.comment.CommentRepository;
 import com.final_project_leesanghun_team2.repository.follow.FollowRepository;
 import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import com.final_project_leesanghun_team2.security.domain.PrincipalDetails;
@@ -28,6 +36,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,7 +59,10 @@ public class UserService {
     private final RedisTemplate<String, String> refreshTokenRedisTemplate;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+    private final LikesRepository likesRepository;
     private final FollowRepository followRepository;
+    private final TagPostRepository tagPostRepository;
     private final BCryptPasswordEncoder encoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenUtil jwtTokenUtil;
@@ -233,8 +248,23 @@ public class UserService {
         // 조회한 유저와 로그인한 유저가 같을 때 삭제를 할 수 있다.
         hasPermission(user, findUser);
 
-        // 태그포스트 게시물, 댓글, 팔로우, 좋아요 지우고 user 삭제한다.
-        userRepository.delete(findUser);
+        // user 의 post, tagPost, likes, comment, follow 논리적 삭제
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Post> posts = postRepository.findAllByUser(findUser, pageable);
+        for (Post post : posts) {
+            post.softDelete();
+            List<TagPost> tagPosts = tagPostRepository.findAllByPost(post);
+            for (TagPost tagPost : tagPosts) tagPost.softDelete();
+            List<Likes> likes = likesRepository.findAllByPost(post);
+            for (Likes like : likes) like.softDelete();
+            List<Comment> comments = commentRepository.findAllByPost(post);
+            for (Comment comment : comments) comment.softDelete();
+        }
+        List<Follow> follows = followRepository.findAllByFollowingUserOrFollowUser(findUser, findUser);
+        for (Follow follow : follows) follow.softDelete();
+
+        // 논리적 삭제
+        findUser.softDelete();
     }
 
     private void checkDuplicationNickname(String nickName) {

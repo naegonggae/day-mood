@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "deleted_at is NULL")
 public class Likes extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

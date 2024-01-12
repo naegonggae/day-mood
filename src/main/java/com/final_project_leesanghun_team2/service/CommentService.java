@@ -114,7 +114,8 @@ public class CommentService {
         // Comment User == login User 일 때 삭제
         checkPermission(user, findComment);
 
-        commentRepository.delete(findComment);
+        // 논리적 삭제
+        findComment.softDelete();
     }
 
     private void checkPermission(User user, Comment findComment) {

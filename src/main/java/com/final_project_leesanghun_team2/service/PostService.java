@@ -1,6 +1,8 @@
 package com.final_project_leesanghun_team2.service;
 
 import com.final_project_leesanghun_team2.domain.dto.post.PostDefaultResponse;
+import com.final_project_leesanghun_team2.domain.entity.Comment;
+import com.final_project_leesanghun_team2.domain.entity.Likes;
 import com.final_project_leesanghun_team2.domain.entity.Post;
 import com.final_project_leesanghun_team2.domain.dto.post.request.PostSaveRequest;
 import com.final_project_leesanghun_team2.domain.dto.post.request.PostUpdateRequest;
@@ -14,6 +16,8 @@ import com.final_project_leesanghun_team2.exception.tag.NoSuchTagException;
 import com.final_project_leesanghun_team2.exception.user.NoSuchUserException;
 import com.final_project_leesanghun_team2.exception.user.PermissionDeniedException;
 import com.final_project_leesanghun_team2.repository.LikesRepository;
+import com.final_project_leesanghun_team2.repository.TagPostRepository;
+import com.final_project_leesanghun_team2.repository.comment.CommentRepository;
 import com.final_project_leesanghun_team2.repository.post.PostRepository;
 import com.final_project_leesanghun_team2.repository.TagRepository;
 import com.final_project_leesanghun_team2.repository.UserRepository;
@@ -35,10 +39,12 @@ import java.util.Objects;
 @Slf4j
 public class PostService {
 
-    private final LikesRepository likesRepository;
-    private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final TagRepository tagRepository;
+    private final TagPostRepository tagPostRepository;
+    private final LikesRepository likesRepository;
+    private final CommentRepository commentRepository;
     private final CacheEvictService cacheEvictService;
     private final CacheMethodService cacheMethodService;
 
@@ -176,8 +182,16 @@ public class PostService {
         cacheEvictService.evictUserPosts(user.getId());
         cacheEvictService.evictTagPosts(post.getTagPostList());
 
-        // cascade remove 와 orphanRemoval = true 로 tagPost 자동 삭제
-        postRepository.delete(post);
+        // post 에 달린 comment, tagPost, likes 논리적 삭제
+        List<Comment> comments = commentRepository.findAllByPost(post);
+        for (Comment comment : comments) comment.softDelete();
+        List<TagPost> tagPosts = tagPostRepository.findAllByPost(post);
+        for (TagPost tagPost : tagPosts) tagPost.softDelete();
+        List<Likes> likes = likesRepository.findAllByPost(post);
+        for (Likes like : likes) like.softDelete();
+
+        // post 는 논리적 삭제
+        post.softDelete();
     }
 
     private void checkPermission(User user, Post post) {

@@ -6,11 +6,13 @@ import com.final_project_leesanghun_team2.domain.dto.comment.request.ReplySaveRe
 import lombok.*;
 
 import javax.persistence.*;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Where(clause = "deleted_at is NULL")
 @Table(name = "comment", indexes = {
         @Index(name = "post_id_idx", columnList = "post_id")
 })
