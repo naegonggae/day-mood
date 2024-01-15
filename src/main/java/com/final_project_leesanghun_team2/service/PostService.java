@@ -66,7 +66,7 @@ public class PostService {
 
         // tag_id 와 user_id 에 대한 게시물들 캐시 삭제
         cacheEvictService.evictUserPosts(user.getId());
-        cacheEvictService.evictTagPosts(post.getTagPostList());
+//        cacheEvictService.evictTagPosts(post.getTagPostList());
 
         return PostSaveResponse.from(savedPost);
     }
@@ -162,7 +162,7 @@ public class PostService {
 
         // tag_id 와 user_id 에 대한 게시물들 캐시 삭제
         cacheEvictService.evictUserPosts(user.getId());
-        cacheEvictService.evictTagPosts(post.getTagPostList());
+//        cacheEvictService.evictTagPosts(post.getTagPostList());
 
         // 변경감지 수정
         post.update(request, tagPostList);
@@ -180,7 +180,7 @@ public class PostService {
 
         // tag_id 와 user_id 에 대한 게시물들 캐시 삭제
         cacheEvictService.evictUserPosts(user.getId());
-        cacheEvictService.evictTagPosts(post.getTagPostList());
+//        cacheEvictService.evictTagPosts(post.getTagPostList());
 
         // post 에 달린 comment, tagPost, likes 논리적 삭제
         List<Comment> comments = commentRepository.findAllByPost(post);

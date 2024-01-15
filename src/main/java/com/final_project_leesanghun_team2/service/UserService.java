@@ -232,6 +232,8 @@ public class UserService {
 
         // 회원이 새로 가입하면 새로 조인한 top5 유저 캐시 삭제
         cacheEvictService.evictTop5JoinUserList();
+        // user_id 에 대한 게시물들 캐시 삭제
+        cacheEvictService.evictUserPosts(user.getId());
 
         findUser.update(request.getNickName());
         return UserUpdateResponse.from(findUser);
@@ -249,6 +251,8 @@ public class UserService {
 
         // 회원이 새로 가입하면 새로 조인한 top5 유저 캐시 삭제
         cacheEvictService.evictTop5JoinUserList();
+        // user_id 에 대한 게시물들 캐시 삭제
+        cacheEvictService.evictUserPosts(user.getId());
 
         // user 의 post, tagPost, likes, comment, follow 논리적 삭제
         Pageable pageable = PageRequest.of(0, 10);

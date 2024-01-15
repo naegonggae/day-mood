@@ -24,7 +24,7 @@ public class CacheMethodService {
 	private final PostRepository postRepository;
 	private final TagPostRepository tagPostRepository;
 
-	@Cacheable(cacheNames = "tagPosts", key = "#findTag.id")
+//	@Cacheable(cacheNames = "tagPosts", key = "#findTag.id")
     public List<TagPost> getTagPosts(Tag findTag) {
 		log.info("tagPosts - tagId : {}의 결과를 캐싱합니다.", findTag.getId());
         return tagPostRepository.findAllByTag(findTag);
