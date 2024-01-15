@@ -93,8 +93,8 @@ jobs:
               -e JWT_TOKEN_SECRET=${{ secrets.JWT_TOKEN_SECRET }} \
               -e JWT_TOKEN_ACCESS_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_ACCESS_EXPIRE_LENGTH }} \
               -e JWT_TOKEN_REFRESH_EXPIRE_LENGTH=${{ secrets.JWT_TOKEN_REFRESH_EXPIRE_LENGTH }} \
-              -e SPRING_DATA_REDIS_HOST=${{ secrets.DATA_REDIS_HOST }} \
-              -e SPRING_DATA_REDIS_PORT=${{ secrets.DATA_REDIS_PORT }} \
-              -e SPRING_DATA_REDIS_PASSWORD=${{ secrets.DATA_REDIS_PASSWORD }} \
+              -e SPRING_DATA_REDIS_HOST=${{ secrets.SPRING_DATA_REDIS_HOST }} \
+              -e SPRING_DATA_REDIS_PORT=${{ secrets.SPRING_DATA_REDIS_PORT }} \
+              -e SPRING_DATA_REDIS_PASSWORD=${{ secrets.SPRING_DATA_REDIS_PASSWORD }} \
               ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
             sudo docker image prune -f
