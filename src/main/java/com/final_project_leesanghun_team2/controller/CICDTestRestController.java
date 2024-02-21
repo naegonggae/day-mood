@@ -11,6 +11,6 @@ public class CICDTestRestController {
 
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
-        return ResponseEntity.ok().body("test");
+        return ResponseEntity.ok().body("test!!!");
     }
 }
